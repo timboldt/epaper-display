@@ -45,6 +45,7 @@ func main() {
 	println("after ADC")
 
 	for {
+		// TODO: Handle errors properly.
 		rawTemperature, _ := clock.ReadTemperature()
 		temperature := float64(rawTemperature) / 1000
 		clockTime, _ := clock.ReadTime()
@@ -54,7 +55,7 @@ func main() {
 
 		display.ClearDisplay()
 		tinyfont.WriteLine(&display, &proggy.TinySZ8pt7b, 0, 6, []byte(
-			fmt.Sprintf("%.2f'C  %.1f V",
+			fmt.Sprintf("%.1f'C  %.2f V",
 				temperature,
 				batteryVoltage)),
 			color.RGBA{255, 255, 255, 255})
@@ -64,6 +65,7 @@ func main() {
 			color.RGBA{255, 255, 255, 255})
 		display.Display()
 
+		// TODO: Sleep until the start of the next minute.
 		time.Sleep(60 * time.Second)
 	}
 }
