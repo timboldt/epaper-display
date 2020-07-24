@@ -24,7 +24,7 @@ func main() {
 
 	clock := ds3231.New(machine.I2C0)
 	clock.Configure()
-	// t, _ := time.Parse(time.RFC3339, "2020-07-21T19:44:00-07:00")
+	// t, _ := time.Parse(time.RFC3339, "2020-07-23T23:32:00-07:00")
 	// clock.SetTime(t)
 	println("after clock")
 
@@ -39,14 +39,29 @@ func main() {
 	display.Display()
 	println("after display")
 
+	machine.InitADC()
+	adc := machine.ADC{Pin: machine.D9}
+	adc.Configure()
+	println("after ADC")
+
 	for {
-		temp, _ := clock.ReadTemperature()
-		tim, _ := clock.ReadTime()
-		println(temp, tim.Format(time.RFC3339))
+		rawTemperature, _ := clock.ReadTemperature()
+		temperature := float64(rawTemperature) / 1000
+		clockTime, _ := clock.ReadTime()
+		// Voltage divider is half of 3.3V and total scale is 65536.
+		batteryVoltage := float64(adc.Get()) * 2 * 3.3 / 65536
+		println(temperature, clockTime.Format(time.RFC3339), batteryVoltage)
 
 		display.ClearDisplay()
-		tinyfont.WriteLine(&display, &proggy.TinySZ8pt7b, 0, 6, []byte(fmt.Sprintf("Temp: %.2f C", float64(temp)/1000)), color.RGBA{255, 255, 255, 255})
-		tinyfont.WriteLine(&display, &freesans.Bold12pt7b, 0, 25, []byte(fmt.Sprintf("%s", tim.Format(time.Kitchen))), color.RGBA{255, 255, 255, 255})
+		tinyfont.WriteLine(&display, &proggy.TinySZ8pt7b, 0, 6, []byte(
+			fmt.Sprintf("%.2f'C  %.1f V",
+				temperature,
+				batteryVoltage)),
+			color.RGBA{255, 255, 255, 255})
+		tinyfont.WriteLine(&display, &freesans.Bold12pt7b, 0, 25, []byte(
+			fmt.Sprintf("%s",
+				clockTime.Format(time.Kitchen))),
+			color.RGBA{255, 255, 255, 255})
 		display.Display()
 
 		time.Sleep(60 * time.Second)
