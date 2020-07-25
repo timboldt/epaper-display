@@ -10,7 +10,6 @@ import (
 	"tinygo.org/x/drivers/ds3231"
 	"tinygo.org/x/tinyfont"
 	"tinygo.org/x/tinyfont/freesans"
-	"tinygo.org/x/tinyfont/proggy"
 
 	// TODO: Switch to Go modules, when available in TinyGo.
 	"./epd4in2"
@@ -52,8 +51,8 @@ func main() {
 	display.ClearDisplay()
 	println("epd: WaitUntilIdle")
 	display.WaitUntilIdle()
-	println("epd: Pause for 2 seconds")
-	time.Sleep(2 * time.Second)
+	println("epd: Pause for 20 seconds")
+	time.Sleep(20 * time.Second)
 
 	for {
 		//
@@ -80,8 +79,8 @@ func main() {
 		println(clockTime.Format(time.Kitchen), statusInfo)
 
 		display.ClearBuffer()
-		tinyfont.WriteLine(&display, &proggy.TinySZ8pt7b, 0, 6, []byte(statusInfo), black)
-		tinyfont.WriteLine(&display, &freesans.Bold12pt7b, 0, 25, []byte(
+		tinyfont.WriteLine(&display, &freesans.Bold12pt7b, 0, 20, []byte(statusInfo), black)
+		tinyfont.WriteLine(&display, &freesans.Bold12pt7b, 0, 40, []byte(
 			fmt.Sprintf("%s",
 				clockTime.Format(time.Kitchen))),
 			black)
@@ -89,10 +88,13 @@ func main() {
 		display.Display()
 		println("epd: WaitUntilIdle")
 		display.WaitUntilIdle()
+		// UNNECESSARY?
+		time.Sleep(1 * time.Second)
 		println("epd: DeepSleep")
 		display.DeepSleep()
 
-		// TODO: Sleep until the start of the next minute.
-		time.Sleep(180 * time.Second)
+		// Sleep until the start of the next minute.
+		seconds := int64(120 - clockTime.Second())
+		time.Sleep(time.Duration(seconds) * time.Second)
 	}
 }
