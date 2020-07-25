@@ -5,6 +5,8 @@
 * [X] Get it to flash on the new Feather M0.
 * [X] Get the RTC clock working over I2C. (And set it to the right time, initially.)
 * [X] Show the time with a simple OLED display.
+* [X] Show the RTC temperature.
+* [X] Show the battery voltage.
 
 ### v0.2 Show the time on an e-paper display.
 

@@ -16,17 +16,13 @@ import (
 
 func main() {
 	time.Sleep(3 * time.Second)
-	println("before")
 
 	machine.I2C0.Configure(machine.I2CConfig{
-		Frequency: machine.TWI_FREQ_400KHZ,
+		Frequency: machine.TWI_FREQ_100KHZ,
 	})
 
 	clock := ds3231.New(machine.I2C0)
 	clock.Configure()
-	// t, _ := time.Parse(time.RFC3339, "2020-07-23T23:32:00-07:00")
-	// clock.SetTime(t)
-	println("after clock")
 
 	display := ssd1306.NewI2C(machine.I2C0)
 	display.Configure(ssd1306.Config{
@@ -37,28 +33,30 @@ func main() {
 	display.ClearDisplay()
 	tinyfont.WriteLine(&display, &proggy.TinySZ8pt7b, 5, 20, []byte("Hello World"), color.RGBA{255, 255, 255, 255})
 	display.Display()
-	println("after display")
 
 	machine.InitADC()
 	adc := machine.ADC{Pin: machine.D9}
 	adc.Configure()
-	println("after ADC")
 
 	for {
-		// TODO: Handle errors properly.
-		rawTemperature, _ := clock.ReadTemperature()
-		temperature := float64(rawTemperature) / 1000
-		clockTime, _ := clock.ReadTime()
+		temperatureMilliC, err := clock.ReadTemperature()
+		if err != nil {
+			println("Error reading temperature", err)
+		}
+		clockTime, err := clock.ReadTime()
+		if err != nil {
+			println("Error reading time", err)
+			clockTime = time.Time{}
+		}
 		// Voltage divider is half of 3.3V and total scale is 65536.
-		batteryVoltage := float64(adc.Get()) * 2 * 3.3 / 65536
-		println(temperature, clockTime.Format(time.RFC3339), batteryVoltage)
+		batteryMilliVolts := int32(adc.Get()) * 2 * 3300 / 65536
+
+		statusInfo := fmt.Sprintf("%d.%02d C  %d.%02d V",
+			temperatureMilliC/1000, temperatureMilliC%1000/10,
+			batteryMilliVolts/1000, batteryMilliVolts%1000/10)
 
 		display.ClearDisplay()
-		tinyfont.WriteLine(&display, &proggy.TinySZ8pt7b, 0, 6, []byte(
-			fmt.Sprintf("%.1f'C  %.2f V",
-				temperature,
-				batteryVoltage)),
-			color.RGBA{255, 255, 255, 255})
+		tinyfont.WriteLine(&display, &proggy.TinySZ8pt7b, 0, 6, []byte(statusInfo), color.RGBA{255, 255, 255, 255})
 		tinyfont.WriteLine(&display, &freesans.Bold12pt7b, 0, 25, []byte(
 			fmt.Sprintf("%s",
 				clockTime.Format(time.Kitchen))),
@@ -66,6 +64,6 @@ func main() {
 		display.Display()
 
 		// TODO: Sleep until the start of the next minute.
-		time.Sleep(60 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
