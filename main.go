@@ -8,11 +8,10 @@ import (
 	"time"
 
 	"tinygo.org/x/drivers/ds3231"
-	"tinygo.org/x/tinyfont"
-	"tinygo.org/x/tinyfont/freesans"
 
 	// TODO: Switch to Go modules, when available in TinyGo.
 	"./epd4in2"
+	"./fonts"
 )
 
 func main() {
@@ -79,8 +78,8 @@ func main() {
 		println(clockTime.Format(time.Kitchen), statusInfo)
 
 		display.ClearBuffer()
-		tinyfont.WriteLine(&display, &freesans.Bold12pt7b, 0, 20, []byte(statusInfo), black)
-		tinyfont.WriteLine(&display, &freesans.Bold12pt7b, 0, 40, []byte(
+		fonts.WriteLine(&display, &fonts.TinySZ8pt7b, 0, 20, []byte(statusInfo), black)
+		fonts.WriteLine(&display, &fonts.TinySZ8pt7b, 100, 150, []byte(
 			fmt.Sprintf("%s",
 				clockTime.Format(time.Kitchen))),
 			black)
@@ -93,8 +92,8 @@ func main() {
 		println("epd: DeepSleep")
 		display.DeepSleep()
 
-		// Sleep until the start of the next minute.
-		seconds := int64(120 - clockTime.Second())
+		// Sleep until the start of the next appropriate minute.
+		seconds := int64(180 - clockTime.Second())
 		time.Sleep(time.Duration(seconds) * time.Second)
 	}
 }

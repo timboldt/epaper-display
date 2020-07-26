@@ -236,7 +236,7 @@ func (d *Device) SetPixel(x int16, y int16, c color.RGBA) {
 	if x < 0 || x >= d.logicalWidth || y < 0 || y >= d.height {
 		return
 	}
-	byteIndex := (x + y*d.logicalWidth) / 8
+	byteIndex := (uint32(x) + uint32(y)*uint32(d.logicalWidth)) / 8
 	if c.R == 0 && c.G == 0 && c.B == 0 { // TRANSPARENT / WHITE
 		d.buffer[byteIndex] |= 0x80 >> uint8(x%8)
 	} else { // WHITE / EMPTY
