@@ -85,6 +85,10 @@ func main() {
 			fmt.Sprintf("%s",
 				clockTime.Format(time.Kitchen))),
 			black)
+
+		drawGuage(&display, 350, 50, "VBat", (float64(batteryMilliVolts)/1000-3.0)/1.2)
+		drawGuage(&display, 350, 250, "Temp", (float64(temperatureMilliC)/1000-20)/10)
+
 		drawClock(&display, 200, 150, clockTime)
 		println("epd: Display")
 		display.Display()
@@ -150,4 +154,52 @@ func drawClock(display drivers.Displayer, x int16, y int16, t time.Time) {
 	// Draw the pin in the center.
 	tinydraw.FilledCircle(display, x, y, centerPointWidth, white)
 	tinydraw.Circle(display, x, y, centerPointWidth, black)
+}
+
+func drawGuage(display drivers.Displayer, x int16, y int16, label string, value float64) {
+	const (
+		guageRadius      = 20
+		tickRadius       = 17
+		needleRadius     = 18
+		needleWidth      = 3
+		centerPointWidth = 2
+	)
+	black := color.RGBA{1, 1, 1, 255}
+	white := color.RGBA{0, 0, 0, 255}
+
+	// Draw the guage face.
+	tinydraw.Circle(display, x, y, guageRadius, black)
+	for i := -4; i <= 4; i++ {
+		dx, dy := math.Sincos(float64(i) / 12 * 2 * math.Pi)
+		tinydraw.Line(
+			display,
+			x+int16(tickRadius*dx), y-int16(tickRadius*dy),
+			x+int16(guageRadius*dx), y-int16(guageRadius*dy),
+			black)
+	}
+	tinydraw.FilledRectangle(
+		display,
+		x-guageRadius*3/4, y+guageRadius*3/4,
+		x+guageRadius*3/4, y+guageRadius*4/3,
+		white)
+	_, textWidth := fonts.LineWidth(&fonts.TinySZ8pt7b, []byte(label))
+	fonts.WriteLine(
+		display,
+		&fonts.TinySZ8pt7b,
+		x-int16((textWidth+1)/2), y+guageRadius,
+		[]byte(label),
+		black)
+
+	// Draw the needle.
+	angle := (value - 0.5) * 8 / 12 * 2 * math.Pi
+	nx, ny := math.Sincos(angle)
+	tinydraw.Line(
+		display,
+		x+int16(-0.1*needleRadius*nx), y-int16(-0.1*needleRadius*ny),
+		x+int16(needleRadius*nx), y-int16(needleRadius*ny),
+		black)
+
+	// Draw the pin in the center.
+	tinydraw.FilledCircle(display, x, y, centerPointWidth, black)
+	display.SetPixel(x, y, white)
 }
