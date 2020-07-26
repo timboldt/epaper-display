@@ -46,7 +46,6 @@ func main() {
 	// Initialize E-Paper display.
 	display := epd4in2.New(machine.SPI0, machine.D12, machine.D11, machine.D10, machine.D6)
 	display.Configure(epd4in2.Config{})
-	black := color.RGBA{1, 1, 1, 255}
 	display.ClearBuffer()
 	println("epd: ClearDisplay")
 	display.ClearDisplay()
@@ -80,14 +79,15 @@ func main() {
 		println(clockTime.Format(time.Kitchen), statusInfo)
 
 		display.ClearBuffer()
-		fonts.WriteLine(&display, &fonts.TinySZ8pt7b, 0, 20, []byte(statusInfo), black)
-		fonts.WriteLine(&display, &fonts.TinySZ8pt7b, 50, 50, []byte(
-			fmt.Sprintf("%s",
-				clockTime.Format(time.Kitchen))),
-			black)
 
-		drawGuage(&display, 350, 50, "VBat", (float64(batteryMilliVolts)/1000-3.0)/1.2)
-		drawGuage(&display, 350, 250, "Temp", (float64(temperatureMilliC)/1000-20)/10)
+		drawGuage(&display, 50, 50, "Day of Week", int16(clockTime.Weekday()), 0, 6)
+		drawGuage(&display, 50, 100, "Value: 0%", 0, 0, 100)
+		drawGuage(&display, 50, 150, "Value: 25%", 25, 0, 100)
+		drawGuage(&display, 50, 200, "Value: 50%", 50, 0, 100)
+		drawGuage(&display, 50, 250, "Value: 100%", 100, 0, 100)
+
+		drawGuage(&display, 350, 50, "Battery (V)", int16(batteryMilliVolts), 3300, 4200)
+		drawGuage(&display, 350, 250, "Inside ('C)", int16(temperatureMilliC/10), 2000, 3000)
 
 		drawClock(&display, 200, 150, clockTime)
 		println("epd: Display")
@@ -156,7 +156,7 @@ func drawClock(display drivers.Displayer, x int16, y int16, t time.Time) {
 	tinydraw.Circle(display, x, y, centerPointWidth, black)
 }
 
-func drawGuage(display drivers.Displayer, x int16, y int16, label string, value float64) {
+func drawGuage(display drivers.Displayer, x int16, y int16, label string, value int16, minValue int16, maxValue int16) {
 	const (
 		guageRadius      = 20
 		tickRadius       = 17
@@ -167,22 +167,30 @@ func drawGuage(display drivers.Displayer, x int16, y int16, label string, value 
 	black := color.RGBA{1, 1, 1, 255}
 	white := color.RGBA{0, 0, 0, 255}
 
+	if value < minValue {
+		value = minValue
+	}
+	if value > maxValue {
+		value = maxValue
+	}
+	guageValue := float64(value-minValue)/float64(maxValue-minValue) - 0.5
+
 	// Draw the guage face.
 	tinydraw.Circle(display, x, y, guageRadius, black)
-	for i := -4; i <= 4; i++ {
-		dx, dy := math.Sincos(float64(i) / 12 * 2 * math.Pi)
+	for i := -5; i <= 5; i++ {
+		dx, dy := math.Sincos(float64(i) / 16 * 2 * math.Pi)
 		tinydraw.Line(
 			display,
 			x+int16(tickRadius*dx), y-int16(tickRadius*dy),
 			x+int16(guageRadius*dx), y-int16(guageRadius*dy),
 			black)
 	}
+	textWidth, boxWidth := fonts.LineWidth(&fonts.TinySZ8pt7b, []byte(label))
 	tinydraw.FilledRectangle(
 		display,
-		x-guageRadius*3/4, y+guageRadius*3/4,
-		x+guageRadius*3/4, y+guageRadius*4/3,
+		x-int16(boxWidth), y+10,
+		x+int16(boxWidth), y+24,
 		white)
-	_, textWidth := fonts.LineWidth(&fonts.TinySZ8pt7b, []byte(label))
 	fonts.WriteLine(
 		display,
 		&fonts.TinySZ8pt7b,
@@ -191,7 +199,7 @@ func drawGuage(display drivers.Displayer, x int16, y int16, label string, value 
 		black)
 
 	// Draw the needle.
-	angle := (value - 0.5) * 8 / 12 * 2 * math.Pi
+	angle := guageValue * 10 / 16 * 2 * math.Pi
 	nx, ny := math.Sincos(angle)
 	tinydraw.Line(
 		display,
