@@ -3,11 +3,14 @@ package main
 import (
 	"fmt"
 	"machine"
+	"math"
 
 	"image/color"
 	"time"
 
+	"tinygo.org/x/drivers"
 	"tinygo.org/x/drivers/ds3231"
+	"tinygo.org/x/tinydraw"
 
 	// TODO: Switch to Go modules, when available in TinyGo.
 	"./epd4in2"
@@ -44,14 +47,13 @@ func main() {
 	display := epd4in2.New(machine.SPI0, machine.D12, machine.D11, machine.D10, machine.D6)
 	display.Configure(epd4in2.Config{})
 	black := color.RGBA{1, 1, 1, 255}
-	//white := color.RGBA{0, 0, 0, 255}
 	display.ClearBuffer()
 	println("epd: ClearDisplay")
 	display.ClearDisplay()
 	println("epd: WaitUntilIdle")
 	display.WaitUntilIdle()
-	println("epd: Pause for 20 seconds")
-	time.Sleep(20 * time.Second)
+	println("epd: Pause for 10 seconds")
+	time.Sleep(10 * time.Second)
 
 	for {
 		//
@@ -79,10 +81,11 @@ func main() {
 
 		display.ClearBuffer()
 		fonts.WriteLine(&display, &fonts.TinySZ8pt7b, 0, 20, []byte(statusInfo), black)
-		fonts.WriteLine(&display, &fonts.TinySZ8pt7b, 100, 150, []byte(
+		fonts.WriteLine(&display, &fonts.TinySZ8pt7b, 50, 50, []byte(
 			fmt.Sprintf("%s",
 				clockTime.Format(time.Kitchen))),
 			black)
+		drawClock(&display, 200, 150, clockTime)
 		println("epd: Display")
 		display.Display()
 		println("epd: WaitUntilIdle")
@@ -96,4 +99,55 @@ func main() {
 		seconds := int64(180 - clockTime.Second())
 		time.Sleep(time.Duration(seconds) * time.Second)
 	}
+}
+
+func drawClock(display drivers.Displayer, x int16, y int16, t time.Time) {
+	const (
+		clockRadius      = 105
+		clockInnerRadius = 97
+		tickRadius       = 90
+		hourRadius       = 55
+		minuteRadius     = 95
+		hourWidth        = 6
+		minuteWidth      = 5
+		centerPointWidth = 2
+	)
+	black := color.RGBA{1, 1, 1, 255}
+	white := color.RGBA{0, 0, 0, 255}
+
+	// Draw the clock face.
+	tinydraw.FilledCircle(display, x, y, clockRadius, black)
+	tinydraw.FilledCircle(display, x, y, clockInnerRadius, white)
+	for i := 0; i < 12; i++ {
+		dx, dy := math.Sincos(float64(i) / 12 * 2 * math.Pi)
+		tinydraw.Line(
+			display,
+			x+int16(tickRadius*dx), y-int16(tickRadius*dy),
+			x+int16(clockInnerRadius*dx), y-int16(clockInnerRadius*dy),
+			black)
+	}
+
+	// Draw the clock hands.
+	minuteAngle := float64(t.Minute()) / 60 * 2 * math.Pi
+	mx, my := math.Sincos(minuteAngle)
+	hourAngle := float64(t.Hour()*60+t.Minute()) / 60 / 12 * 2 * math.Pi
+	hx, hy := math.Sincos(hourAngle)
+	tinydraw.Triangle(
+		display,
+		x-int16(hourWidth*hy), y-int16(hourWidth*hx),
+		x+int16(hourWidth*hy), y+int16(hourWidth*hx),
+		x+int16(hourRadius*hx), y-int16(hourRadius*hy),
+		black)
+	tinydraw.Line(display, x, y, x+int16(hourRadius*hx), y-int16(hourRadius*hy), black)
+	// tinydraw.Line(display, x, y, x+int16(minuteRadius*mx), y-int16(minuteRadius*my), black)
+	tinydraw.FilledTriangle(
+		display,
+		x-int16(minuteWidth*my), y-int16(minuteWidth*mx),
+		x+int16(minuteWidth*my), y+int16(minuteWidth*mx),
+		x+int16(minuteRadius*mx), y-int16(minuteRadius*my),
+		black)
+
+	// Draw the pin in the center.
+	tinydraw.FilledCircle(display, x, y, centerPointWidth, white)
+	tinydraw.Circle(display, x, y, centerPointWidth, black)
 }
