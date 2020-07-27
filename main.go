@@ -80,14 +80,15 @@ func main() {
 
 		display.ClearBuffer()
 
-		drawGuage(&display, 50, 50, "Day of Week", int16(clockTime.Weekday()), 0, 6)
-		drawGuage(&display, 50, 100, "Value: 0%", 0, 0, 100)
-		drawGuage(&display, 50, 150, "Value: 25%", 25, 0, 100)
-		drawGuage(&display, 50, 200, "Value: 50%", 50, 0, 100)
-		drawGuage(&display, 50, 250, "Value: 100%", 100, 0, 100)
+		drawGuage(&display, 50, 50, "Day", int16(clockTime.Hour()), 7, 22)
+		drawGuage(&display, 50, 100, "Week", int16(clockTime.Weekday())*24+int16(clockTime.Hour()), 0, 7*24)
+		drawGuage(&display, 50, 150, "Month", int16(clockTime.Day()), 1, 31)
+		// drawGuage(&display, 50, 150, "Value: 25%", 25, 0, 100)
+		// drawGuage(&display, 50, 200, "Value: 50%", 50, 0, 100)
+		// drawGuage(&display, 50, 250, "Value: 100%", 100, 0, 100)
 
-		drawGuage(&display, 350, 50, "Battery (V)", int16(batteryMilliVolts), 3300, 4200)
-		drawGuage(&display, 350, 250, "Inside ('C)", int16(temperatureMilliC/10), 2000, 3000)
+		drawGuage(&display, 350, 50, "Battery", int16(batteryMilliVolts), 3300, 4200)
+		drawGuage(&display, 350, 250, "Inside Temp.", int16(temperatureMilliC/10), 2000, 3000)
 
 		drawClock(&display, 200, 150, clockTime)
 		println("epd: Display")
