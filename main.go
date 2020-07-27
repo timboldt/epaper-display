@@ -43,6 +43,11 @@ func main() {
 	vbat := machine.ADC{Pin: machine.D9}
 	vbat.Configure()
 
+	// Initialize TPL511x done pin.
+	powerOff := machine.D5
+	powerOff.Configure(machine.PinConfig{Mode: machine.PinOutput})
+	powerOff.Low()
+
 	// Initialize E-Paper display.
 	display := epd4in2.New(machine.SPI0, machine.D12, machine.D11, machine.D10, machine.D6)
 	display.Configure(epd4in2.Config{})
@@ -95,10 +100,13 @@ func main() {
 		display.Display()
 		println("epd: WaitUntilIdle")
 		display.WaitUntilIdle()
-		// UNNECESSARY?
-		time.Sleep(1 * time.Second)
 		println("epd: DeepSleep")
 		display.DeepSleep()
+
+		// Signal power off.
+		powerOff.Low()
+		time.Sleep(5 * time.Second)
+		powerOff.High()
 
 		// Sleep until the start of the next appropriate minute.
 		seconds := int64(180 - clockTime.Second())
