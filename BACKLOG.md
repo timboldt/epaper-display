@@ -10,8 +10,8 @@
 
 ### v0.2 Show the time on an e-paper display.
 
-* [ ] Extend the existing 2.13" driver to work with a 4" EPD.
-* [ ] Explore possibility of doing 2-bit grey scale without a 30KB buffer.
+* [X] Extend the existing 2.13" driver to work with a 4" EPD.
+* [-] Explore possibility of doing 2-bit grey scale without a 30KB buffer.
 * [ ] Add TPL5110 Low Power Timer, so that everything can run on batteries for a long time.
 
 ### v0.3 Add network capability
@@ -19,11 +19,18 @@
 * [ ] Add support for WiFiNINA (ESP32 over SPI).
 * [ ] Occasionally refresh the time using NTP.
 
-### v0.4 Add interesting information
+### v0.4 Add remaining sensors
 
-* Weather
+* [ ] Humidity sensor
+* [ ] Air quality sensor
+
+### v0.5 Add external information
+
+* [ ] Outside temperature and humidity
+* [ ] Stock market
+* [ ] Bitcoin
 * Sunrise/sunset
-* Stock market
+* Outside air quality
 * etc.
 
 ### Misc build-related stuff
