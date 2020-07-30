@@ -3,9 +3,8 @@
 #include <Fonts/Picopixel.h>
 #include <GxEPD2_BW.h>
 #include <RTClib.h>
-
-//#include "Fonts/FreeMonoBold9pt7b.h"
-//#include "bitmaps/Bitmaps400x300.h"  // 4.2"  b/w
+#include <SPI.h>
+#include <WiFiNINA.h>
 
 #define MAX_DISPLAY_BUFFER_SIZE 15000ul  // ~15k is a good compromise
 #define MAX_HEIGHT(EPD)                                        \
@@ -13,13 +12,28 @@
          ? EPD::HEIGHT                                         \
          : MAX_DISPLAY_BUFFER_SIZE / (EPD::WIDTH / 8))
 
+//==================
 // Pin definitions.
-#define EPD_CS 12
-#define EPD_DC 11
-#define EPD_RESET 10
-#define EPD_BUSY 6
-#define VBATPIN 9
+//==================
+
+// Waveshare EPD.
+#define EPD_BUSY A2
+#define EPD_RESET A3
+#define EPD_DC A4
+#define EPD_CS A5
+
+// TPL5111.
 #define POWER_OFF 5
+
+// Voltage divider for LiPo.
+#define VBATPIN 9
+
+// Adafruit ESP32 Airlift.
+#define SPIWIFI SPI      // The SPI port
+#define SPIWIFI_SS 13    // Chip select pin
+#define ESP32_RESETN 12  // Reset pin
+#define SPIWIFI_ACK 11   // a.k.a BUSY or READY pin
+#define ESP32_GPIO0 -1
 
 GxEPD2_BW<GxEPD2_420, MAX_HEIGHT(GxEPD2_420)> display(GxEPD2_420(EPD_CS, EPD_DC,
                                                                  EPD_RESET,
@@ -29,6 +43,75 @@ RTC_DS3231 rtc;
 char daysOfTheWeek[7][12] = {"Sunday",   "Monday", "Tuesday", "Wednesday",
                              "Thursday", "Friday", "Saturday"};
 
+// HACK
+
+void listNetworks() {
+  // scan for nearby networks:
+  Serial.println("** Scan Networks **");
+  int numSsid = WiFi.scanNetworks();
+  if (numSsid == -1) {
+    Serial.println("Couldn't get a wifi connection");
+    while (true);
+  }
+
+  // print the list of networks seen:
+  Serial.print("number of available networks:");
+  Serial.println(numSsid);
+
+  // print the network number and name for each network found:
+  for (int thisNet = 0; thisNet < numSsid; thisNet++) {
+    Serial.print(thisNet);
+    Serial.print(") ");
+    Serial.print(WiFi.SSID(thisNet));
+    Serial.print("\tSignal: ");
+    Serial.print(WiFi.RSSI(thisNet));
+    Serial.print(" dBm");
+    Serial.print("\tEncryption: ");
+    printEncryptionType(WiFi.encryptionType(thisNet));
+  }
+}
+
+void printEncryptionType(int thisType) {
+  // read the encryption type and print out the name:
+  switch (thisType) {
+    case ENC_TYPE_WEP:
+      Serial.println("WEP");
+      break;
+    case ENC_TYPE_TKIP:
+      Serial.println("WPA");
+      break;
+    case ENC_TYPE_CCMP:
+      Serial.println("WPA2");
+      break;
+    case ENC_TYPE_NONE:
+      Serial.println("None");
+      break;
+    case ENC_TYPE_AUTO:
+      Serial.println("Auto");
+      break;
+    case ENC_TYPE_UNKNOWN:
+    default:
+      Serial.println("Unknown");
+      break;
+  }
+}
+
+
+void printMacAddress(byte mac[]) {
+  for (int i = 5; i >= 0; i--) {
+    if (mac[i] < 16) {
+      Serial.print("0");
+    }
+    Serial.print(mac[i], HEX);
+    if (i > 0) {
+      Serial.print(":");
+    }
+  }
+  Serial.println();
+}
+
+// <<HACK
+
 void setup() {
     Serial.begin(57600);
 
@@ -37,6 +120,30 @@ void setup() {
     //     ;  // wait for serial port to connect. Needed for native USB
     // }
     delay(3000);
+
+    // WiFi setup.
+    WiFi.setPins(SPIWIFI_SS, SPIWIFI_ACK, ESP32_RESETN, ESP32_GPIO0, &SPIWIFI);
+    while (WiFi.status() == WL_NO_MODULE) {
+        Serial.println("Communication with WiFi module failed!");
+        // don't continue
+        delay(1000);
+    }
+    String fv = WiFi.firmwareVersion();
+    Serial.println(fv);
+    if (fv < "1.0.0") {
+        Serial.println("Please upgrade the firmware");
+        while (1) delay(10);
+    }
+    Serial.println("Firmware OK");
+
+    // print your MAC address:
+    byte mac[6];
+    WiFi.macAddress(mac);
+    Serial.print("MAC: ");
+    printMacAddress(mac);
+
+    Serial.println("Scanning available networks...");
+    listNetworks();
 
     // Initialize the real-time clock: DS3231.
     if (!rtc.begin()) {
