@@ -1,7 +1,8 @@
 #include <Adafruit_GFX.h>
 #define ENABLE_GxEPD2_GFX 0
-#include "GxEPD2_BW.h"
-#include "RTClib.h"
+#include <Fonts/Picopixel.h>
+#include <GxEPD2_BW.h>
+#include <RTClib.h>
 
 //#include "Fonts/FreeMonoBold9pt7b.h"
 //#include "bitmaps/Bitmaps400x300.h"  // 4.2"  b/w
@@ -147,7 +148,7 @@ void DrawClock(int16_t x, int16_t y, const DateTime &t) {
     display.drawCircle(x, y, center_point_width, GxEPD_BLACK);
 }
 
-void DrawGauge(int16_t x, int16_t y, const char *label, float value,
+void DrawGauge(int16_t x, int16_t y, const String &label, float value,
                float min_value, float max_value) {
     const int16_t gauge_radius = 20;
     const int16_t tick_radius = 17;
@@ -174,7 +175,14 @@ void DrawGauge(int16_t x, int16_t y, const char *label, float value,
     }
     display.fillRect(x - gauge_radius, y + 10, x + gauge_radius, y + 24,
                      GxEPD_WHITE);
-    // textWidth, boxWidth := fonts.LineWidth(&fonts.TinySZ8pt7b, []byte(label))
+    display.setFont(&Picopixel);
+    int16_t fx, fy;
+    uint16_t fw, fh;
+    display.getTextBounds(label, x, y, &fx, &fy, &fw, &fh);
+    display.setCursor(x - fw / 2, y + gauge_radius - fh / 2);
+    display.setTextColor(GxEPD_BLACK);
+    display.print(label);
+
     // fonts.WriteLine(
     // 	display,
     // 	&fonts.TinySZ8pt7b,
