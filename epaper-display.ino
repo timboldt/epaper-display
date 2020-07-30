@@ -106,55 +106,50 @@ float BatteryVoltage() {
 void DrawClock(int16_t x, int16_t y, const DateTime &t) {
     const int16_t clock_radius = 105;
     const int16_t clock_inner_radius = 97;
-    const float hour_radius = 55.0;
-    const float minute_radius = 95.0;
-    // 		tickRadius       = 90
-    // 		hourWidth        = 6
-    // 		minuteWidth      = 5
-    // 		centerPointWidth = 2
+    const int16_t tick_radius = 90;
+    const int16_t hour_radius = 55;
+    const int16_t minute_radius = 95;
+    const int16_t hour_width = 6;
+    const int16_t minute_width = 4;
+    const int16_t center_point_width = 2;
 
     // Draw the clock face.
     display.fillCircle(x, y, clock_radius, GxEPD_BLACK);
     display.fillCircle(x, y, clock_inner_radius, GxEPD_WHITE);
-    // 	for i := 0; i < 12; i++ {
-    // 		dx, dy := math.Sincos(float64(i) / 12 * 2 * math.Pi)
-    // 		tinydraw.Line(
-    // 			display,
-    // 			x+int16(tickRadius*dx), y-int16(tickRadius*dy),
-    // 			x+int16(clockInnerRadius*dx), y-int16(clockInnerRadius*dy),
-    // 			black)
-    // 	}
+    for (int i = 0; i < 12; i++) {
+        float dx = sin(float(i) / 12 * 2 * PI);
+        float dy = cos(float(i) / 12 * 2 * PI);
+        display.drawLine(x + tick_radius * dx, y - tick_radius * dy,
+                         x + clock_inner_radius * dx,
+                         y - clock_inner_radius * dy, GxEPD_BLACK);
+    }
 
-    // Draw the clock hands.
+    // Draw the hour hand.
     float hour_angle =
         float(t.twelveHour() * 60 + t.minute()) / 60.0 / 12.0 * 2.0 * PI;
     float hx = sin(hour_angle);
     float hy = cos(hour_angle);
-    // 	tinydraw.Triangle(
-    // 		display,
-    // 		x-int16(hourWidth*hy), y-int16(hourWidth*hx),
-    // 		x+int16(hourWidth*hy), y+int16(hourWidth*hx),
-    // 		x+int16(hourRadius*hx), y-int16(hourRadius*hy),
-    // 		black)
-    display.drawLine(x, y, x + int16_t(roundf(hx * hour_radius)),
-                     y - int16_t(roundf(hy * hour_radius)), GxEPD_BLACK);
+    float hb_x = x - hour_width * hx;
+    float hb_y = y + hour_width * hy;
+    display.drawTriangle(hb_x - hour_width * hy, hb_y - hour_width * hx,
+                         hb_x + hour_width * hy, hb_y + hour_width * hx,
+                         x + hour_radius * hx, y - hour_radius * hy,
+                         GxEPD_BLACK);
 
+    // Draw the minute hand.
     float minute_angle = float(t.minute()) / 60.0 * 2.0 * PI;
     float mx = sin(minute_angle);
     float my = cos(minute_angle);
-    display.drawLine(x, y, x + int16_t(roundf(mx * minute_radius)),
-                     y - int16_t(roundf(my * minute_radius)), GxEPD_BLACK);
+    float mb_x = x - minute_width * mx;
+    float mb_y = y + minute_width * my;
+    display.fillTriangle(mb_x - minute_width * my, mb_y - minute_width * mx,
+                         mb_x + minute_width * my, mb_y + minute_width * mx,
+                         x + minute_radius * mx, y - minute_radius * my,
+                         GxEPD_BLACK);
 
-    // 	// tinydraw.Line(display, x, y, x+int16(minuteRadius*mx),
-    // y-int16(minuteRadius*my), black) 	tinydraw.FilledTriangle(
-    // display, 		x-int16(minuteWidth*my), y-int16(minuteWidth*mx),
-    // 		x+int16(minuteWidth*my), y+int16(minuteWidth*mx),
-    // 		x+int16(minuteRadius*mx), y-int16(minuteRadius*my),
-    // 		black)
-
-    // 	// Draw the pin in the center.
-    // 	tinydraw.FilledCircle(display, x, y, centerPointWidth, white)
-    // 	tinydraw.Circle(display, x, y, centerPointWidth, black)
+    // Draw the pin in the center.
+    display.fillCircle(x, y, center_point_width, GxEPD_WHITE);
+    display.drawCircle(x, y, center_point_width, GxEPD_BLACK);
 }
 
 // func drawGuage(display drivers.Displayer, x int16, y int16, label string,
