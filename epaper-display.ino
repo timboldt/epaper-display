@@ -71,17 +71,12 @@ void loop() {
     display.firstPage();
     do {
         display.fillScreen(GxEPD_WHITE);
-        // drawGuage(&display, 50, 50, "Day", int16(clockTime.Hour()), 7, 22)
-        // drawGuage(&display, 50, 100, "Week",
-        // int16(clockTime.Weekday())*24+int16(clockTime.Hour()), 0, 7*24)
-        // drawGuage(&display, 50, 150, "Month", int16(clockTime.Day()), 1, 31)
-        // // drawGuage(&display, 50, 150, "Value: 25%", 25, 0, 100)
-        // // drawGuage(&display, 50, 200, "Value: 50%", 50, 0, 100)
-        // // drawGuage(&display, 50, 250, "Value: 100%", 100, 0, 100)
+        DrawGauge(50, 50, "Work Day", now.hour(), 8, 5);
+        DrawGauge(50, 100, "Work Week", now.dayOfTheWeek(), 1, 5);
+        DrawGauge(50, 150, "Month", now.day(), 1, 31);
 
-        // drawGuage(&display, 350, 50, "Battery", int16(batteryMilliVolts),
-        // 3300, 4200) drawGuage(&display, 350, 250, "Inside Temp.",
-        // int16(temperatureMilliC/10), 2000, 3000)
+        DrawGauge(350, 50, "Battery", battery_voltage, 3.3, 4.2);
+        DrawGauge(350, 250, "Inside Temp.", d23231_temperature, 20, 30);
 
         DrawClock(200, 150, now);
     } while (display.nextPage());
@@ -152,55 +147,50 @@ void DrawClock(int16_t x, int16_t y, const DateTime &t) {
     display.drawCircle(x, y, center_point_width, GxEPD_BLACK);
 }
 
-// func drawGuage(display drivers.Displayer, x int16, y int16, label string,
-// value int16, minValue int16, maxValue int16) { 	const ( 		guageRadius
-// = 20 		tickRadius       = 17 		needleRadius     = 18
-// needleWidth      = 3 		centerPointWidth = 2
-// 	)
-// 	black := color.RGBA{1, 1, 1, 255}
-// 	white := color.RGBA{0, 0, 0, 255}
+void DrawGauge(int16_t x, int16_t y, const char *label, float value,
+               float min_value, float max_value) {
+    const int16_t gauge_radius = 20;
+    const int16_t tick_radius = 17;
+    const int16_t needle_radius = 18;
+    const int16_t needle_width = 3;
+    const int16_t pin_width = 2;
 
-// 	if value < minValue {
-// 		value = minValue
-// 	}
-// 	if value > maxValue {
-// 		value = maxValue
-// 	}
-// 	guageValue := float64(value-minValue)/float64(maxValue-minValue) - 0.5
+    if (value < min_value) {
+        value = min_value;
+    }
+    if (value > max_value) {
+        value = max_value;
+    }
+    float gauge_value = (value - min_value) / (max_value - min_value) - 0.5;
 
-// 	// Draw the guage face.
-// 	tinydraw.Circle(display, x, y, guageRadius, black)
-// 	for i := -5; i <= 5; i++ {
-// 		dx, dy := math.Sincos(float64(i) / 16 * 2 * math.Pi)
-// 		tinydraw.Line(
-// 			display,
-// 			x+int16(tickRadius*dx), y-int16(tickRadius*dy),
-// 			x+int16(guageRadius*dx), y-int16(guageRadius*dy),
-// 			black)
-// 	}
-// 	textWidth, boxWidth := fonts.LineWidth(&fonts.TinySZ8pt7b, []byte(label))
-// 	tinydraw.FilledRectangle(
-// 		display,
-// 		x-int16(boxWidth), y+10,
-// 		x+int16(boxWidth), y+24,
-// 		white)
-// 	fonts.WriteLine(
-// 		display,
-// 		&fonts.TinySZ8pt7b,
-// 		x-int16((textWidth+1)/2), y+guageRadius,
-// 		[]byte(label),
-// 		black)
+    // Draw the guage face.
+    display.drawCircle(x, y, gauge_radius, GxEPD_BLACK);
+    for (int i = -5; i <= 5; i++) {
+        float dx = sin(i * 2 * PI / 16);
+        float dy = cos(i * 2 * PI / 16);
+        display.drawLine(x + tick_radius * dx, y - tick_radius * dy,
+                         x + gauge_radius * dx, y - gauge_radius * dy,
+                         GxEPD_BLACK);
+    }
+    display.fillRect(x - gauge_radius, y + 10, x + gauge_radius, y + 24,
+                     GxEPD_WHITE);
+    // textWidth, boxWidth := fonts.LineWidth(&fonts.TinySZ8pt7b, []byte(label))
+    // fonts.WriteLine(
+    // 	display,
+    // 	&fonts.TinySZ8pt7b,
+    // 	x-int16((textWidth+1)/2), y+guageRadius,
+    // 	[]byte(label),
+    // 	black)
 
-// 	// Draw the needle.
-// 	angle := guageValue * 10 / 16 * 2 * math.Pi
-// 	nx, ny := math.Sincos(angle)
-// 	tinydraw.Line(
-// 		display,
-// 		x+int16(-0.1*needleRadius*nx), y-int16(-0.1*needleRadius*ny),
-// 		x+int16(needleRadius*nx), y-int16(needleRadius*ny),
-// 		black)
+    // Draw the needle.
+    float angle = gauge_value * 10 / 16 * 2 * PI;
+    float nx = sin(angle);
+    float ny = cos(angle);
+    display.drawLine(x - 0.1 * needle_radius * nx, y + 0.1 * needle_radius * ny,
+                     x + needle_radius * nx, y - needle_radius * ny,
+                     GxEPD_BLACK);
 
-// 	// Draw the pin in the center.
-// 	tinydraw.FilledCircle(display, x, y, centerPointWidth, black)
-// 	display.SetPixel(x, y, white)
-// }
+    // Draw the pin in the center.
+    display.fillCircle(x, y, pin_width, GxEPD_BLACK);
+    display.drawPixel(x, y, GxEPD_WHITE);
+}
