@@ -1,66 +1,55 @@
 #include <WiFiNINA.h>
 
-void listNetworks() {
-  // scan for nearby networks:
-  Serial.println("** Scan Networks **");
-  int numSsid = WiFi.scanNetworks();
-  if (numSsid == -1) {
-    Serial.println("Couldn't get a wifi connection");
-    while (true);
-  }
+#include "wifi_secrets.h"
 
-  // print the list of networks seen:
-  Serial.print("number of available networks:");
-  Serial.println(numSsid);
+bool ConnectToNetwork() {
+    WiFi.setPins(SPIWIFI_SS, SPIWIFI_ACK, ESP32_RESETN, ESP32_GPIO0, &SPIWIFI);
+    while (WiFi.status() == WL_NO_MODULE) {
+        Serial.println("WiFi: Communication with Airlift module failed.");
+        return false;
+    }
+    String fv = WiFi.firmwareVersion();
+    Serial.print("WiFi firmware version: ");
+    Serial.println(fv);
 
-  // print the network number and name for each network found:
-  for (int thisNet = 0; thisNet < numSsid; thisNet++) {
-    Serial.print(thisNet);
-    Serial.print(") ");
-    Serial.print(WiFi.SSID(thisNet));
-    Serial.print("\tSignal: ");
-    Serial.print(WiFi.RSSI(thisNet));
-    Serial.print(" dBm");
-    Serial.print("\tEncryption: ");
-    printEncryptionType(WiFi.encryptionType(thisNet));
-  }
+    byte mac[6];
+    WiFi.macAddress(mac);
+    Serial.print("WiFi MAC address: ");
+    PrintMacAddress(mac);
+
+    int status = WiFi.begin(SECRET_SSID, SECRET_PASS);
+    if (status != WL_CONNECTED) {
+        Serial.print("WiFi connection failed: ");
+        Serial.println(status);
+        return false;
+    }
+    Serial.print("WiFi SSID: ");
+    Serial.println(WiFi.SSID());
+
+    IPAddress ip = WiFi.localIP();
+    Serial.print("WiFi IP Address: ");
+    Serial.println(ip);
+
+    // print the received signal strength:
+    long rssi = WiFi.RSSI();
+    Serial.print("WiFi RSSI:");
+    Serial.print(rssi);
+    Serial.println(" dBm");
+
+    return true;
 }
 
-void printEncryptionType(int thisType) {
-  // read the encryption type and print out the name:
-  switch (thisType) {
-    case ENC_TYPE_WEP:
-      Serial.println("WEP");
-      break;
-    case ENC_TYPE_TKIP:
-      Serial.println("WPA");
-      break;
-    case ENC_TYPE_CCMP:
-      Serial.println("WPA2");
-      break;
-    case ENC_TYPE_NONE:
-      Serial.println("None");
-      break;
-    case ENC_TYPE_AUTO:
-      Serial.println("Auto");
-      break;
-    case ENC_TYPE_UNKNOWN:
-    default:
-      Serial.println("Unknown");
-      break;
-  }
-}
+void DisconnectFromNetwork() { WiFi.end(); }
 
-
-void printMacAddress(byte mac[]) {
-  for (int i = 5; i >= 0; i--) {
-    if (mac[i] < 16) {
-      Serial.print("0");
+void PrintMacAddress(byte mac[]) {
+    for (int i = 5; i >= 0; i--) {
+        if (mac[i] < 16) {
+            Serial.print("0");
+        }
+        Serial.print(mac[i], HEX);
+        if (i > 0) {
+            Serial.print(":");
+        }
     }
-    Serial.print(mac[i], HEX);
-    if (i > 0) {
-      Serial.print(":");
-    }
-  }
-  Serial.println();
+    Serial.println();
 }

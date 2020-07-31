@@ -52,30 +52,6 @@ void setup() {
     // }
     delay(3000);
 
-    // WiFi setup.
-    WiFi.setPins(SPIWIFI_SS, SPIWIFI_ACK, ESP32_RESETN, ESP32_GPIO0, &SPIWIFI);
-    while (WiFi.status() == WL_NO_MODULE) {
-        Serial.println("Communication with WiFi module failed!");
-        // don't continue
-        delay(1000);
-    }
-    String fv = WiFi.firmwareVersion();
-    Serial.println(fv);
-    if (fv < "1.0.0") {
-        Serial.println("Please upgrade the firmware");
-        while (1) delay(10);
-    }
-    Serial.println("Firmware OK");
-
-    // print your MAC address:
-    byte mac[6];
-    WiFi.macAddress(mac);
-    Serial.print("MAC: ");
-    printMacAddress(mac);
-
-    Serial.println("Scanning available networks...");
-    listNetworks();
-
     // Initialize the real-time clock: DS3231.
     if (!rtc.begin()) {
         Serial.println("RTC not found.");
@@ -92,6 +68,10 @@ void setup() {
     // Initialize TPL511x Done pin.
     pinMode(POWER_OFF, OUTPUT);
     digitalWrite(POWER_OFF, LOW);
+
+    if (ConnectToNetwork()) {
+      DisconnectFromNetwork();
+    }
 
     Serial.println("Init done.");
 }
