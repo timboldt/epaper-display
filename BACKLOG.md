@@ -16,13 +16,13 @@
 
 ### v0.3 Add network capability
 
-* [ ] Add support for WiFiNINA (ESP32 over SPI).
-* [ ] Occasionally refresh the time using NTP.
+* [X] Add support for WiFiNINA (ESP32 over SPI).
+* [X] Occasionally refresh the time using NTP.
 
 ### v0.4 Add remaining sensors
 
-* [ ] Humidity sensor
-* [ ] Air quality sensor
+* [X] Humidity sensor
+* [-] Air quality sensor
 
 ### v0.5 Add external information
 

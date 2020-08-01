@@ -1,10 +1,4 @@
-#include <ArduinoJson.h>
-#include <HttpClient.h>
-#include <WiFiNINA.h>
-
-#include "wifi_secrets.h"
-
-WiFiClient wifi;
+#include "global.h"
 
 bool ConnectToNetwork() {
     WiFi.setPins(SPIWIFI_SS, SPIWIFI_ACK, ESP32_RESETN, ESP32_GPIO0, &SPIWIFI);
@@ -39,8 +33,6 @@ bool ConnectToNetwork() {
     Serial.print("WiFi RSSI:");
     Serial.print(rssi);
     Serial.println(" dBm");
-
-    SetTimeFromWeb();
 
     return true;
 }

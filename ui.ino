@@ -1,7 +1,5 @@
 
-#include <Adafruit_GFX.h>
-#include <Fonts/FreeSerif12pt7b.h>
-#include <Fonts/Picopixel.h>
+#include "global.h"
 
 void DrawDate(DateTime &now) {
     char label[] = "DDD, MMM DD";
