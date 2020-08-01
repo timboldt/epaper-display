@@ -1,5 +1,4 @@
 #include <Adafruit_GFX.h>
-#include <Fonts/Picopixel.h>
 #include <GxEPD2_BW.h>
 #include <RTClib.h>
 #include <SPI.h>
@@ -104,6 +103,7 @@ void loop() {
         DrawGauge(350, 100, "Inside Humid.", humidity, 0, 100);
         DrawGauge(350, 150, "Pressure", pressure, 99, 101);
 
+        DrawDate(now);
         DrawClock(200, 150, now);
     } while (display.nextPage());
     display.hibernate();

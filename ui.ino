@@ -1,5 +1,19 @@
 
 #include <Adafruit_GFX.h>
+#include <Fonts/FreeSerif12pt7b.h>
+#include <Fonts/Picopixel.h>
+
+void DrawDate(DateTime &now) {
+    char label[] = "DDD, MMM DD";
+    now.toString(label);
+    display.setFont(&FreeSerif12pt7b);
+    int16_t fx, fy;
+    uint16_t fw, fh;
+    display.getTextBounds(label, 50, 50, &fx, &fy, &fw, &fh);
+    display.setCursor(200 - fw / 2, fh);
+    display.setTextColor(GxEPD_BLACK);
+    display.print(label);
+}
 
 void DrawClock(int16_t x, int16_t y, const DateTime &t) {
     const int16_t clock_radius = 105;
