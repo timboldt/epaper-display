@@ -42,15 +42,11 @@ RTC_DS3231 rtc;
 char daysOfTheWeek[7][12] = {"Sunday",   "Monday", "Tuesday", "Wednesday",
                              "Thursday", "Friday", "Saturday"};
 
-
 void setup() {
     Serial.begin(57600);
 
-    // TEMPORARY: For human benefit.
-    // while (!Serial) {
-    //     ;  // wait for serial port to connect. Needed for native USB
-    // }
-    delay(3000);
+    // Initialize the display: Waveshare 4.2" B/W EPD.
+    display.init();
 
     // Initialize the real-time clock: DS3231.
     if (!rtc.begin()) {
@@ -62,21 +58,29 @@ void setup() {
         Serial.println("RTC lost power");
     }
 
-    // Initialize the display: Waveshare 4.2" B/W EPD.
-    display.init();
+    InitBME280();
 
     // Initialize TPL511x Done pin.
     pinMode(POWER_OFF, OUTPUT);
     digitalWrite(POWER_OFF, LOW);
 
     if (ConnectToNetwork()) {
-      DisconnectFromNetwork();
+        DisconnectFromNetwork();
     }
 
     Serial.println("Init done.");
 }
 
 void loop() {
+    float temperature, humidity, pressure;
+    ReadBME280(&temperature, &humidity, &pressure);
+    Serial.print("Temperature: ");
+    Serial.println(temperature);
+    Serial.print("Humidity: ");
+    Serial.println(humidity);
+    Serial.print("Pressure: ");
+    Serial.println(pressure);
+
     DateTime now = rtc.now();
     float d23231_temperature = rtc.getTemperature();
     float battery_voltage = BatteryVoltage();
@@ -93,9 +97,12 @@ void loop() {
         DrawGauge(50, 50, "Work Day", now.hour(), 8, 17);
         DrawGauge(50, 100, "Work Week", now.dayOfTheWeek(), 1, 5);
         DrawGauge(50, 150, "Month", now.day(), 1, 31);
+        DrawGauge(50, 200, "Battery", battery_voltage, 3.3, 4.2);
+        DrawGauge(50, 250, "Clock Temp.", d23231_temperature, 20, 30);
 
-        DrawGauge(350, 50, "Battery", battery_voltage, 3.3, 4.2);
-        DrawGauge(350, 250, "Inside Temp.", d23231_temperature, 20, 30);
+        DrawGauge(350, 50, "Inside Temp.", temperature, 20, 30);
+        DrawGauge(350, 100, "Inside Humid.", humidity, 0, 100);
+        DrawGauge(350, 150, "Pressure", pressure, 99, 101);
 
         DrawClock(200, 150, now);
     } while (display.nextPage());
