@@ -1,6 +1,10 @@
+#include <ArduinoJson.h>
+#include <HttpClient.h>
 #include <WiFiNINA.h>
 
 #include "wifi_secrets.h"
+
+WiFiClient wifi;
 
 bool ConnectToNetwork() {
     WiFi.setPins(SPIWIFI_SS, SPIWIFI_ACK, ESP32_RESETN, ESP32_GPIO0, &SPIWIFI);
@@ -36,6 +40,8 @@ bool ConnectToNetwork() {
     Serial.print(rssi);
     Serial.println(" dBm");
 
+    SetTimeFromWeb();
+
     return true;
 }
 
@@ -52,4 +58,33 @@ void PrintMacAddress(byte mac[]) {
         }
     }
     Serial.println();
+}
+
+void SetTimeFromWeb() {
+    HttpClient client = HttpClient(wifi, "worldtimeapi.org", 80);
+    Serial.println("making GET request");
+    client.get("/api/ip");
+
+    // read the status code and body of the response
+    int statusCode = client.responseStatusCode();
+    String response = client.responseBody();
+
+    Serial.print("Status code: ");
+    Serial.println(statusCode);
+    Serial.print("Response: ");
+    Serial.println(response);
+
+    DynamicJsonDocument doc(1024);
+    DeserializationError error = deserializeJson(doc, response);
+    if (error) {
+        Serial.print(F("deserializeJson() failed: "));
+        Serial.println(error.c_str());
+        return;
+    }
+
+    // Extract values
+    Serial.println(F("Response:"));
+    Serial.println(doc["client_ip"].as<char*>());
+    Serial.println(doc["datetime"].as<char*>());
+    rtc.adjust(doc["datetime"].as<char*>());
 }
