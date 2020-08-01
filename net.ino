@@ -62,29 +62,32 @@ void PrintMacAddress(byte mac[]) {
 
 void SetTimeFromWeb() {
     HttpClient client = HttpClient(wifi, "worldtimeapi.org", 80);
-    Serial.println("making GET request");
+    Serial.println("Requesting time from worldtimeapi.org...");
     client.get("/api/ip");
 
-    // read the status code and body of the response
     int statusCode = client.responseStatusCode();
-    String response = client.responseBody();
-
-    Serial.print("Status code: ");
-    Serial.println(statusCode);
-    Serial.print("Response: ");
-    Serial.println(response);
+    if (statusCode != 200) {
+        Serial.print("HTTP request failed to worldtimeapi.org: ");
+        Serial.println(statusCode);
+        return;
+    }
 
     DynamicJsonDocument doc(1024);
-    DeserializationError error = deserializeJson(doc, response);
+    DeserializationError error = deserializeJson(doc, client.responseBody());
     if (error) {
-        Serial.print(F("deserializeJson() failed: "));
+        Serial.print("Could not parse time from worldtimeapi.org: ");
         Serial.println(error.c_str());
         return;
     }
 
-    // Extract values
-    Serial.println(F("Response:"));
-    Serial.println(doc["client_ip"].as<char*>());
-    Serial.println(doc["datetime"].as<char*>());
+    // Extract time and adjust the clock.
+    DateTime newTime(doc["datetime"].as<char*>());
+    DateTime oldTime = rtc.now();
     rtc.adjust(doc["datetime"].as<char*>());
+
+    Serial.print("Adjusted the time by ");
+    Serial.print((newTime - oldTime).seconds());
+    Serial.print(" seconds to: ");
+    char timeBuffer[] = "YY-MM-DD hh:mm:ss AP";
+    Serial.println(newTime.toString(timeBuffer));
 }
