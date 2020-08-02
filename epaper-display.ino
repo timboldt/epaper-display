@@ -39,20 +39,25 @@ void loop() {
     display.firstPage();
     do {
         display.fillScreen(GxEPD_WHITE);
-        DrawGauge(50, 50, "Work Day", now.hour(), 8, 17);
-        DrawGauge(50, 100, "Work Week", now.dayOfTheWeek(), 1, 5);
-        DrawGauge(50, 150, "Month", now.day(), 1, 31);
-        DrawGauge(50, 200, "Battery", battery_voltage, 3.3, 4.2);
-        DrawGauge(50, 250, "Clock Temp.", d23231_temperature, 20, 30);
+        DrawGauge(260, 60, "Work Day", now.hour(), 8, 17);
+        DrawGauge(310, 60, "Work Week", now.dayOfTheWeek(), 1, 5);
+        DrawGauge(360, 60, "Month", now.day(), 1, 31);
 
-        DrawGauge(350, 50, "Inside Temp.", temperature, 20, 30);
-        DrawGauge(350, 100, "Inside Humid.", humidity, 0, 100);
-        DrawGauge(350, 150, "Pressure", pressure, 99, 101);
-        DrawGauge(350, 200, "Outside Temp.", outsideTemperature, 20, 30);
-        DrawGauge(350, 250, "Outside Humid.", outsideHumidity, 0, 100);
+        DrawGauge(260, 110, "Battery", battery_voltage, 3.3, 4.2);
+        DrawGauge(310, 110, "Pressure", pressure, 99, 101);
+        DrawGauge(360, 110, "Clock Tmp", d23231_temperature, 20, 30);
+
+        DrawChoice(260, 160, temperature, (now.hour() < 22) ? 23 : 18,
+                   outsideTemperature);
+        DrawGauge(310, 160, "Inside Tmp", temperature, 20, 30);
+        DrawGauge(360, 160, "Outside Tmp", outsideTemperature, 20, 30);
+
+        DrawChoice(260, 210, humidity, 40, outsideHumidity);
+        DrawGauge(310, 210, "Inside RH%", humidity, 0, 100);
+        DrawGauge(360, 210, "Outside RH%", outsideHumidity, 0, 100);
 
         DrawDate(now);
-        DrawClock(200, 150, now);
+        DrawClock(120, 120, now);
     } while (display.nextPage());
     display.hibernate();
 

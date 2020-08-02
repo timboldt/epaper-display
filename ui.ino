@@ -8,7 +8,8 @@ void DrawDate(DateTime &now) {
     int16_t fx, fy;
     uint16_t fw, fh;
     display.getTextBounds(label, 50, 50, &fx, &fy, &fw, &fh);
-    display.setCursor(200 - fw / 2, fh);
+    // Center justified: display.setCursor(200 - fw / 2, fh);
+    display.setCursor(400 - fw - 20, fh);
     display.setTextColor(GxEPD_BLACK);
     display.print(label);
 }
@@ -108,4 +109,29 @@ void DrawGauge(int16_t x, int16_t y, const String &label, float value,
     // Draw the pin in the center.
     display.fillCircle(x, y, pin_width, GxEPD_BLACK);
     display.drawPixel(x, y, GxEPD_WHITE);
+}
+
+void DrawChoice(int16_t x, int16_t y, float current, float target,
+                float other) {
+    const int16_t outer_radius = 20;
+    const int16_t inner_radius = 17;
+    // "on" is true if activating "other" would bring "current" closer to
+    // "target".
+    bool on = false;
+    if (target > current && target < other) {
+        // Other would bring current up towards target.
+        on = true;
+    } else if (target < current && target > other) {
+        // Other would bring current down towards target.
+        on = true;
+    } else if (abs(other - target) < abs(current - target)) {
+        // Other is closer to target.
+        on = true;
+    }
+    display.drawCircle(x, y, outer_radius, GxEPD_BLACK);
+    if (on) {
+        display.drawCircle(x, y, inner_radius, GxEPD_BLACK);
+    } else {
+        display.fillCircle(x, y, inner_radius, GxEPD_BLACK);
+    }
 }
