@@ -83,3 +83,27 @@ void SetTimeFromWeb() {
     char timeBuffer[] = "YY-MM-DD hh:mm:ss AP";
     Serial.println(newTime.toString(timeBuffer));
 }
+
+void GetWeatherFromWeb(float *temperature, float *humidity) {
+    HttpClient client = HttpClient(wifi, "api.openweathermap.org", 80);
+    Serial.println("Requesting weather from api.openweathermap.org...");
+    client.get("/data/2.5/weather?id=5383777&units=metric&appid=" OPENWEATHER_API_KEY);
+
+    int statusCode = client.responseStatusCode();
+    if (statusCode != 200) {
+        Serial.print("HTTP request failed to api.openweathermap.org: ");
+        Serial.println(statusCode);
+        return;
+    }
+
+    DynamicJsonDocument doc(1024);
+    DeserializationError error = deserializeJson(doc, client.responseBody());
+    if (error) {
+        Serial.print("Could not parse time from api.openweathermap.org: ");
+        Serial.println(error.c_str());
+        return;
+    }
+
+    *temperature = doc["main"]["temp"].as<float>();
+    *humidity = doc["main"]["humidity"].as<float>();
+}

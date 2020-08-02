@@ -22,6 +22,12 @@ void setup() {
 }
 
 void loop() {
+    float outsideTemperature, outsideHumidity;
+    if (ConnectToNetwork()) {
+        GetWeatherFromWeb(&outsideTemperature, &outsideHumidity);
+        DisconnectFromNetwork();
+    }
+
     float temperature, humidity, pressure;
     ReadBME280(&temperature, &humidity, &pressure);
 
@@ -42,6 +48,8 @@ void loop() {
         DrawGauge(350, 50, "Inside Temp.", temperature, 20, 30);
         DrawGauge(350, 100, "Inside Humid.", humidity, 0, 100);
         DrawGauge(350, 150, "Pressure", pressure, 99, 101);
+        DrawGauge(350, 200, "Outside Temp.", outsideTemperature, 20, 30);
+        DrawGauge(350, 250, "Outside Humid.", outsideHumidity, 0, 100);
 
         DrawDate(now);
         DrawClock(200, 150, now);
