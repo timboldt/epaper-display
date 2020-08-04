@@ -15,6 +15,8 @@ bool ConnectToNetwork() {
     Serial.print("WiFi MAC address: ");
     PrintMacAddress(mac);
 
+    WiFi.lowPowerMode();
+
     int status = WiFi.begin(SECRET_SSID, SECRET_PASS);
     if (status != WL_CONNECTED) {
         Serial.print("WiFi connection failed: ");
