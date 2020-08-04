@@ -22,7 +22,8 @@ void setup() {
 }
 
 void loop() {
-    float outsideTemperature, outsideHumidity;
+    float outsideTemperature = 0.0;
+    float outsideHumidity = 0.0;
     if (ConnectToNetwork()) {
         GetWeatherFromWeb(&outsideTemperature, &outsideHumidity);
         DisconnectFromNetwork();
@@ -44,7 +45,6 @@ void loop() {
         DrawGauge(360, 60, "Month", now.day(), 1, 31);
 
         DrawGauge(260, 110, "Battery", battery_voltage, 3.3, 4.2);
-        DrawGauge(310, 110, "Pressure", pressure, 99, 101);
         DrawGauge(360, 110, "Clock Tmp", d23231_temperature, 20, 30);
 
         DrawChoice(260, 160, temperature, (now.hour() < 22) ? 23 : 18,
@@ -52,7 +52,8 @@ void loop() {
         DrawGauge(310, 160, "Inside Tmp", temperature, 20, 30);
         DrawGauge(360, 160, "Outside Tmp", outsideTemperature, 20, 30);
 
-        DrawChoice(260, 210, humidity, 40, outsideHumidity);
+        //DrawChoice(260, 210, humidity, 40, outsideHumidity);
+        DrawGauge(260, 210, "Pressure", pressure, 99, 101);
         DrawGauge(310, 210, "Inside RH%", humidity, 0, 100);
         DrawGauge(360, 210, "Outside RH%", outsideHumidity, 0, 100);
 
