@@ -19,3 +19,11 @@ void MountFilesystem() {
     }
     Serial.println("Mounted filesystem!");
 }
+
+bool ReadFromCache(String name, JsonDocument *doc, int seconds) {
+    return false;
+}
+
+bool SaveDocToCache(String name, JsonDocument *doc) {
+    return false;
+}
