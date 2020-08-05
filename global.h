@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Adafruit_GFX.h>
+#include <Adafruit_SPIFlash.h>
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <BMx280I2C.h>
@@ -9,6 +10,7 @@
 #include <GxEPD2_BW.h>
 #include <HttpClient.h>
 #include <RTClib.h>
+#include <SdFat.h>
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <Wire.h>
@@ -64,6 +66,11 @@ BMx280I2C bmx280(0x76);
 
 // DS3231 Real-Time Clock.
 RTC_DS3231 rtc;
+
+// On-board Flash Storage.
+Adafruit_FlashTransport_SPI flashTransport(EXTERNAL_FLASH_USE_CS, EXTERNAL_FLASH_USE_SPI);
+Adafruit_SPIFlash flash(&flashTransport);
+FatFileSystem fatfs;
 
 // Adafruit ESP32 Airlift.
 WiFiClient wifi;

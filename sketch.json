@@ -1,6 +1,6 @@
 {
   "cpu": {
-    "fqbn": "adafruit:samd:adafruit_feather_m0",
+    "fqbn": "adafruit:samd:adafruit_feather_m0_express",
     "port": ""
   }
 }

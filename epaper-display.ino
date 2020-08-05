@@ -3,6 +3,11 @@
 void setup() {
     Serial.begin(57600);
 
+    // Uncomment the following for testing.
+    // while (!Serial) {
+    //     delay(100);
+    // }
+
     // Initialize the display: Waveshare 4.2" B/W EPD.
     display.init();
 
@@ -12,6 +17,8 @@ void setup() {
     // Initialize TPL511x Done pin.
     pinMode(POWER_OFF, OUTPUT);
     digitalWrite(POWER_OFF, LOW);
+
+    MountFilesystem();
 
     if (ConnectToNetwork()) {
         SetTimeFromWeb();
@@ -47,12 +54,12 @@ void loop() {
         DrawGauge(260, 110, "Battery", battery_voltage, 3.3, 4.2);
         DrawGauge(360, 110, "Clock Tmp", d23231_temperature, 20, 30);
 
-        DrawChoice(260, 160, temperature, (now.hour() < 22) ? 23 : 18,
+        DrawChoice(260, 160, temperature, (now.hour() < 22) ? 22 : 18,
                    outsideTemperature);
         DrawGauge(310, 160, "Inside Tmp", temperature, 20, 30);
         DrawGauge(360, 160, "Outside Tmp", outsideTemperature, 20, 30);
 
-        //DrawChoice(260, 210, humidity, 40, outsideHumidity);
+        // DrawChoice(260, 210, humidity, 40, outsideHumidity);
         DrawGauge(260, 210, "Pressure", pressure, 99, 101);
         DrawGauge(310, 210, "Inside RH%", humidity, 0, 100);
         DrawGauge(360, 210, "Outside RH%", outsideHumidity, 0, 100);
