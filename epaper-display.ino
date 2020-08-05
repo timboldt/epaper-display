@@ -31,10 +31,7 @@ void setup() {
 void loop() {
     float outsideTemperature = 0.0;
     float outsideHumidity = 0.0;
-    if (ConnectToNetwork()) {
-        GetWeatherFromWeb(&outsideTemperature, &outsideHumidity);
-        DisconnectFromNetwork();
-    }
+    GetWeatherFromWeb(&outsideTemperature, &outsideHumidity);
 
     float temperature, humidity, pressure;
     ReadBME280(&temperature, &humidity, &pressure);

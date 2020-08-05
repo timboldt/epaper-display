@@ -89,27 +89,33 @@ void SetTimeFromWeb() {
 void GetWeatherFromWeb(float *temperature, float *humidity) {
     const int oneHour = 3600;
     DynamicJsonDocument doc(1024);
-    if (!ReadFromCache("weather.json", &doc, oneHour)) {
-        HttpClient client = HttpClient(wifi, "api.openweathermap.org", 80);
-        Serial.println("Requesting weather from api.openweathermap.org...");
-        client.get(
-            "/data/2.5/"
-            "weather?id=5383777&units=metric&appid=" OPENWEATHER_API_KEY);
+    if (!ReadFromCache("weather.json", doc, oneHour)) {
+        if (ConnectToNetwork()) {
+            HttpClient client = HttpClient(wifi, "api.openweathermap.org", 80);
+            Serial.println("Requesting weather from api.openweathermap.org...");
+            client.get(
+                "/data/2.5/"
+                "weather?id=5383777&units=metric&appid=" OPENWEATHER_API_KEY);
 
-        int statusCode = client.responseStatusCode();
-        if (statusCode != 200) {
-            Serial.print("HTTP request failed to api.openweathermap.org: ");
-            Serial.println(statusCode);
-            return;
+            int statusCode = client.responseStatusCode();
+            if (statusCode != 200) {
+                DisconnectFromNetwork();
+                Serial.print("HTTP request failed to api.openweathermap.org: ");
+                Serial.println(statusCode);
+                return;
+            }
+            DeserializationError error =
+                deserializeJson(doc, client.responseBody());
+            DisconnectFromNetwork();
+
+            if (error) {
+                Serial.print(
+                    "Could not parse time from api.openweathermap.org: ");
+                Serial.println(error.c_str());
+                return;
+            }
+            SaveDocToCache("weather.json", doc);
         }
-        DeserializationError error =
-            deserializeJson(doc, client.responseBody());
-        if (error) {
-            Serial.print("Could not parse time from api.openweathermap.org: ");
-            Serial.println(error.c_str());
-            return;
-        }
-        SaveDocToCache("weather.json", &doc);
     }
 
     *temperature = doc["main"]["temp"].as<float>();

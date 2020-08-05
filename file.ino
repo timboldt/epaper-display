@@ -20,10 +20,35 @@ void MountFilesystem() {
     Serial.println("Mounted filesystem!");
 }
 
-bool ReadFromCache(String name, JsonDocument *doc, int seconds) {
-    return false;
+bool ReadFromCache(String filename, JsonDocument &doc, float seconds) {
+    File file = fatfs.open(filename, FILE_READ);
+    DeserializationError error = deserializeJson(doc, file);
+    file.close();
+    if (error) {
+        Serial.print("Failed to parse file: ");
+        Serial.println(filename);
+        return false;
+    }
+    float cacheTime = doc["cache-timestamp"].as<float>();
+    bool valid = float(rtc.now().unixtime()) - cacheTime <= seconds;
+    if (valid) {
+        Serial.print("Found doc in cache: ");
+        Serial.println(filename);
+    } else {
+        Serial.print("Now: ");
+        Serial.print(rtc.now().unixtime());
+        Serial.print(" Cache: ");
+        Serial.println(cacheTime);
+    }
+    return valid;
 }
 
-bool SaveDocToCache(String name, JsonDocument *doc) {
-    return false;
+void SaveDocToCache(String filename, JsonDocument &doc) {
+    Serial.print("Saving to cache: ");
+    Serial.println(filename);
+    fatfs.remove(filename.c_str());
+    File file = fatfs.open(filename, FILE_WRITE);
+    doc["cache-timestamp"] = float(rtc.now().unixtime());
+    serializeJson(doc, file);
+    file.close();
 }
