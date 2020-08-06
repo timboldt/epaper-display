@@ -73,5 +73,5 @@ void loop() {
     digitalWrite(POWER_OFF, HIGH);
 
     // In case we don't power off, wait at least 3 minutes before redrawing.
-    delay(180000);
+    LowPower.deepSleep(180000);
 }

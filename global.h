@@ -3,6 +3,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SPIFlash.h>
 #include <Arduino.h>
+#include <ArduinoLowPower.h>
 #include <ArduinoJson.h>
 #include <BMx280I2C.h>
 #include <Fonts/FreeSerif12pt7b.h>
