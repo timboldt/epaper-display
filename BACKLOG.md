@@ -12,7 +12,7 @@
 
 * [X] Extend the existing 2.13" driver to work with a 4" EPD.
 * [-] Explore possibility of doing 2-bit grey scale without a 30KB buffer.
-* [ ] Add TPL5110 Low Power Timer, so that everything can run on batteries for a long time.
+* [X] Add TPL5111 Low Power Timer, so that everything can run on batteries for a long time.
 
 ### v0.3 Add network capability
 
@@ -26,7 +26,7 @@
 
 ### v0.5 Add external information
 
-* [ ] Outside temperature and humidity
+* [X] Outside temperature and humidity
 * [ ] Stock market
 * [ ] Bitcoin
 * Sunrise/sunset

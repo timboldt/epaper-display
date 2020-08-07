@@ -55,35 +55,48 @@ void PrintMacAddress(byte mac[]) {
 }
 
 void SetTimeFromWeb() {
-    HttpClient client = HttpClient(wifi, "worldtimeapi.org", 80);
-    Serial.println("Requesting time from worldtimeapi.org...");
-    client.get("/api/ip");
-
-    int statusCode = client.responseStatusCode();
-    if (statusCode != 200) {
-        Serial.print("HTTP request failed to worldtimeapi.org: ");
-        Serial.println(statusCode);
-        return;
-    }
-
+    const int oneDay = 3600 * 24;
     DynamicJsonDocument doc(1024);
-    DeserializationError error = deserializeJson(doc, client.responseBody());
-    if (error) {
-        Serial.print("Could not parse time from worldtimeapi.org: ");
-        Serial.println(error.c_str());
-        return;
+    if (!ReadFromCache("time.json", doc, oneDay)) {
+        if (ConnectToNetwork()) {
+            HttpClient client = HttpClient(wifi, "worldtimeapi.org", 80);
+            Serial.println("Requesting time from worldtimeapi.org...");
+            client.get("/api/ip");
+
+            int statusCode = client.responseStatusCode();
+            if (statusCode != 200) {
+                // TODO: Clean up the network logic instead of having messy exit
+                // paths.
+                DisconnectFromNetwork();
+                Serial.print("HTTP request failed to worldtimeapi.org: ");
+                Serial.println(statusCode);
+                return;
+            }
+
+            DynamicJsonDocument doc(1024);
+            DeserializationError error =
+                deserializeJson(doc, client.responseBody());
+            DisconnectFromNetwork();
+            if (error) {
+                Serial.print("Could not parse time from worldtimeapi.org: ");
+                Serial.println(error.c_str());
+                return;
+            }
+
+            // Extract time and adjust the clock.
+            DateTime newTime(doc["datetime"].as<char *>());
+            DateTime oldTime = rtc.now();
+            rtc.adjust(doc["datetime"].as<char *>());
+
+            Serial.print("Adjusted the time by ");
+            Serial.print((newTime - oldTime).seconds());
+            Serial.print(" seconds to: ");
+            char timeBuffer[] = "YY-MM-DD hh:mm:ss AP";
+            Serial.println(newTime.toString(timeBuffer));
+
+            SaveDocToCache("time.json", doc);
+        }
     }
-
-    // Extract time and adjust the clock.
-    DateTime newTime(doc["datetime"].as<char *>());
-    DateTime oldTime = rtc.now();
-    rtc.adjust(doc["datetime"].as<char *>());
-
-    Serial.print("Adjusted the time by ");
-    Serial.print((newTime - oldTime).seconds());
-    Serial.print(" seconds to: ");
-    char timeBuffer[] = "YY-MM-DD hh:mm:ss AP";
-    Serial.println(newTime.toString(timeBuffer));
 }
 
 void GetWeatherFromWeb(float *temperature, float *humidity) {
@@ -95,7 +108,8 @@ void GetWeatherFromWeb(float *temperature, float *humidity) {
             Serial.println("Requesting weather from api.openweathermap.org...");
             client.get(
                 "/data/2.5/"
-                "weather?id=5383777&units=metric&appid=" OPENWEATHER_API_KEY);
+                "weather?id=5383777&units=metric&"
+                "appid=" OPENWEATHER_API_KEY);
 
             int statusCode = client.responseStatusCode();
             if (statusCode != 200) {
@@ -110,7 +124,8 @@ void GetWeatherFromWeb(float *temperature, float *humidity) {
 
             if (error) {
                 Serial.print(
-                    "Could not parse time from api.openweathermap.org: ");
+                    "Could not parse time from "
+                    "api.openweathermap.org: ");
                 Serial.println(error.c_str());
                 return;
             }

@@ -20,9 +20,12 @@ void setup() {
 
     MountFilesystem();
 
-    if (ConnectToNetwork()) {
-        SetTimeFromWeb();
-        DisconnectFromNetwork();
+    if (rtc.lostPower()) {
+        // TODO: Make this run on some kind of cadence.
+        if (ConnectToNetwork()) {
+            SetTimeFromWeb();
+            DisconnectFromNetwork();
+        }
     }
 
     Serial.println("Init done.");
@@ -66,11 +69,13 @@ void loop() {
     } while (display.nextPage());
     display.hibernate();
 
-    // Signal power off.
-    // TODO: Maybe toggle the POWER_OFF to ensure the edge is detected?
-    digitalWrite(POWER_OFF, LOW);
-    delay(5000);
-    digitalWrite(POWER_OFF, HIGH);
+    // Signal power off, toggling it a few times to get the TPL5111's attention.
+    for (int i = 0; i < 10; i++) {
+        digitalWrite(POWER_OFF, HIGH);
+        delay(1);
+        digitalWrite(POWER_OFF, LOW);
+        delay(1);
+    }
 
     // In case we don't power off, wait at least 3 minutes before redrawing.
     LowPower.deepSleep(180000);
