@@ -21,7 +21,6 @@ void setup() {
     MountFilesystem();
 
     if (rtc.lostPower()) {
-        // TODO: Make this run on some kind of cadence.
         if (ConnectToNetwork()) {
             SetTimeFromWeb();
             DisconnectFromNetwork();
