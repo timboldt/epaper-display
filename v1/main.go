@@ -13,8 +13,8 @@ import (
 	"tinygo.org/x/tinydraw"
 
 	// TODO: Switch to Go modules, when available in TinyGo.
-	"./epd4in2"
-	"./fonts"
+	"github.com/timboldt/epaper-display/v1/epd4in2"
+	"github.com/timboldt/epaper-display/v1/fonts"
 )
 
 func main() {
@@ -49,7 +49,7 @@ func main() {
 	powerOff.Low()
 
 	// Initialize E-Paper display.
-	display := epd4in2.New(machine.SPI0, machine.D12, machine.D11, machine.D10, machine.D6)
+	display := epd4in2.New(machine.SPI0, machine.A5, machine.A4, machine.A3, machine.A2)
 	display.Configure(epd4in2.Config{})
 	display.ClearBuffer()
 	println("epd: ClearDisplay")
@@ -103,9 +103,11 @@ func main() {
 		println("epd: DeepSleep")
 		display.DeepSleep()
 
+		time.Sleep(5 * time.Second)
+
 		// Signal power off.
 		powerOff.Low()
-		time.Sleep(5 * time.Second)
+		time.Sleep(1 * time.Millisecond)
 		powerOff.High()
 
 		// Sleep until the start of the next appropriate minute.
