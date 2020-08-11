@@ -1,1 +1,0 @@
-Copied here from tiny-go/tinyfont, to improve compilation performance.

@@ -11,10 +11,11 @@ import (
 	"tinygo.org/x/drivers"
 	"tinygo.org/x/drivers/ds3231"
 	"tinygo.org/x/tinydraw"
+	"tinygo.org/x/tinyfont"
+	"tinygo.org/x/tinyfont/proggy"
 
 	// TODO: Switch to Go modules, when available in TinyGo.
-	"github.com/timboldt/epaper-display/v1-golang/epd4in2"
-	"github.com/timboldt/epaper-display/v1-golang/fonts"
+	"github.com/timboldt/epaper-display/go/epd4in2"
 )
 
 func main() {
@@ -196,15 +197,15 @@ func drawGuage(display drivers.Displayer, x int16, y int16, label string, value 
 			x+int16(guageRadius*dx), y-int16(guageRadius*dy),
 			black)
 	}
-	textWidth, boxWidth := fonts.LineWidth(&fonts.TinySZ8pt7b, []byte(label))
+	textWidth, boxWidth := tinyfont.LineWidth(&proggy.TinySZ8pt7b, []byte(label))
 	tinydraw.FilledRectangle(
 		display,
 		x-int16(boxWidth), y+10,
 		x+int16(boxWidth), y+24,
 		white)
-	fonts.WriteLine(
+	tinyfont.WriteLine(
 		display,
-		&fonts.TinySZ8pt7b,
+		&proggy.TinySZ8pt7b,
 		x-int16((textWidth+1)/2), y+guageRadius,
 		[]byte(label),
 		black)
