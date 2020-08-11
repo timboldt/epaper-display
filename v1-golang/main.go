@@ -13,8 +13,8 @@ import (
 	"tinygo.org/x/tinydraw"
 
 	// TODO: Switch to Go modules, when available in TinyGo.
-	"github.com/timboldt/epaper-display/v1/epd4in2"
-	"github.com/timboldt/epaper-display/v1/fonts"
+	"github.com/timboldt/epaper-display/v1-golang/epd4in2"
+	"github.com/timboldt/epaper-display/v1-golang/fonts"
 )
 
 func main() {
