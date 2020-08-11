@@ -1,41 +1,14 @@
 # E-Paper Display
 
-## Disclaimer
-
-This is not an officially supported Google product.
-
 ## Introduction
 
-This project was an experiment to make a low-power desktop clock, using an e-paper display.
+This version of the firmware was written using conventional Arduino techniques.
 
-The low-power thing worked out pretty well. Here is the power consumption, on each update, which happens every ~180 seconds:
-
-![](assets/power-consumption.png)
-
-## Software
-
-The original version used TinyGo (see the v1 folder). I then re-wrote it as conventional Arduino firmware.
-
-The main file is `epaper-display.ino`. Sub-modules are in their own `.ino` files, which the Arduino compiler merges together.
+The main file is `arduino.ino`. Sub-modules are in their own `.ino` files, which the Arduino compiler merges together.
 
 There is also a `global.h` which allowed me to satisfy VSCode's need to have an include file in every `.ino` file.
 
-P.S. The code quality of this project is not that high. Most of the code is C-like, and the networking logic does not have very good separation of concerns or error handling flow. On the other hand it was a one-off project and it is successfully serving its intended purpose on my desk.
-
-## Hardware
-
-I chose almost all Adafruit parts for this project, because they are well made, hassle free, and plug together like Legos.
-
-* Adafruit Feather M0 Express
-* Adafruit DS3231 RTC Featherwing
-* Adafruit Airlift Featherwing
-* Adafruit RTL5111 Reset Timer
-* Waveshare 4.2" E-Paper Module
-* BME280 Temperature/Pressure/Humidity Sensor
-
-The end result is a clock that runs for months on a small LiPo battery.
-
-![](assets/clock-front.jpg)
+Caveats. The code quality of this project is not that high. Most of the code is C-like, and the networking logic does not have very good separation of concerns or error handling flow. On the other hand it was a one-off project and it is successfully serving its intended purpose on my desk.
 
 ## Building and running
 
