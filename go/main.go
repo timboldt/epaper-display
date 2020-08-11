@@ -197,7 +197,7 @@ func drawGuage(display drivers.Displayer, x int16, y int16, label string, value 
 			x+int16(guageRadius*dx), y-int16(guageRadius*dy),
 			black)
 	}
-	textWidth, boxWidth := tinyfont.LineWidth(&proggy.TinySZ8pt7b, []byte(label))
+	textWidth, boxWidth := tinyfont.LineWidth(&proggy.TinySZ8pt7b, label)
 	tinydraw.FilledRectangle(
 		display,
 		x-int16(boxWidth), y+10,
@@ -207,7 +207,7 @@ func drawGuage(display drivers.Displayer, x int16, y int16, label string, value 
 		display,
 		&proggy.TinySZ8pt7b,
 		x-int16((textWidth+1)/2), y+guageRadius,
-		[]byte(label),
+		label,
 		black)
 
 	// Draw the needle.
