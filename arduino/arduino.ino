@@ -77,5 +77,6 @@ void loop() {
     }
 
     // In case we don't power off, wait at least 3 minutes before redrawing.
-    LowPower.deepSleep(180000);
+    //LowPower.deepSleep(180000);
+    delay(180000);
 }

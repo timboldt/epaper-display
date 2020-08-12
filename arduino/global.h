@@ -3,7 +3,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SPIFlash.h>
 #include <Arduino.h>
-#include <ArduinoLowPower.h>
+//#include <ArduinoLowPower.h>
 #include <ArduinoJson.h>
 #include <BMx280I2C.h>
 #include <Fonts/FreeSerif12pt7b.h>
@@ -32,7 +32,8 @@
 #define POWER_OFF 5
 
 // Voltage divider for LiPo.
-#define VBATPIN 9
+//#define VBATPIN 9
+#define VBATPIN A6
 
 // Adafruit ESP32 Airlift.
 #define SPIWIFI SPI      // The SPI port
@@ -69,7 +70,15 @@ BMx280I2C bmx280(0x76);
 RTC_DS3231 rtc;
 
 // On-board Flash Storage.
-Adafruit_FlashTransport_SPI flashTransport(EXTERNAL_FLASH_USE_CS, EXTERNAL_FLASH_USE_SPI);
+#if defined(EXTERNAL_FLASH_USE_QSPI)
+  Adafruit_FlashTransport_QSPI flashTransport;
+
+#elif defined(EXTERNAL_FLASH_USE_SPI)
+  Adafruit_FlashTransport_SPI flashTransport(EXTERNAL_FLASH_USE_CS, EXTERNAL_FLASH_USE_SPI);
+
+#else
+  #error No QSPI/SPI flash are defined on your board variant.h !
+#endif
 Adafruit_SPIFlash flash(&flashTransport);
 FatFileSystem fatfs;
 
