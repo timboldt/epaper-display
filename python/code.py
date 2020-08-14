@@ -1,6 +1,7 @@
 import analogio
 import board
 import busio
+from digitalio import DigitalInOut, Direction
 import displayio
 import terminalio
 import time
@@ -18,6 +19,10 @@ BACKGROUND_COLOR = WHITE
 
 DISPLAY_WIDTH = 400
 DISPLAY_HEIGHT = 300
+
+tpl5111_done = DigitalInOut(board.D5)
+tpl5111_done.direction = Direction.OUTPUT
+tpl5111_done.value = False
 
 i2c = busio.I2C(board.SCL, board.SDA)
 rtc = adafruit_ds3231.DS3231(i2c)
@@ -80,5 +85,8 @@ while True:
 
     display.show(g)
     display.refresh()
+
+    time.sleep(5)
+    tpl5111_done.value = True
 
     time.sleep(180)
