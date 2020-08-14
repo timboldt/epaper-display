@@ -41,12 +41,9 @@ display_bus = displayio.FourWire(spi, command=epd_dc, chip_select=epd_cs, reset=
 time.sleep(1)
 display = adafruit_il0398.IL0398(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, seconds_per_frame=20,
                                  busy_pin=epd_busy)
-g = displayio.Group(max_size=10)
 background_bitmap = displayio.Bitmap(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1)
 palette = displayio.Palette(1)
 palette[0] = BACKGROUND_COLOR
-t = displayio.TileGrid(background_bitmap, pixel_shader=palette)
-g.append(t)
 
 while True:
     print("\nTemperature: %0.1f C" % bme280.temperature)
@@ -66,6 +63,10 @@ while True:
         )
     )
     print("The time is {}:{:02}:{:02}".format(t.tm_hour, t.tm_min, t.tm_sec))
+
+    g = displayio.Group(max_size=10)
+    bg = displayio.TileGrid(background_bitmap, pixel_shader=palette)
+    g.append(bg)
 
     text_group = displayio.Group(max_size=10, scale=2, x=20, y=150)
     text = '\n'.join([
