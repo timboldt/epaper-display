@@ -62,7 +62,7 @@ class Display():
                 radius, radius,
                 radius,
                 outline=self.FOREGROUND_COLOR,
-                stroke=int(radius*0.05)+1))
+                stroke=int(radius/30)))
 
         # Draw the tick marks.
         for i in range(12):
@@ -72,8 +72,8 @@ class Display():
                 Line(
                     int(radius + radius*0.85*dx),
                     int(radius - radius*0.85*dy),
-                    int(radius + radius*0.99*dx),
-                    int(radius - radius*0.99*dy),
+                    int(radius + radius*0.95*dx),
+                    int(radius - radius*0.95*dy),
                     self.FOREGROUND_COLOR)
             )
 

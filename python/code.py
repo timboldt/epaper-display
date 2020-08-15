@@ -38,8 +38,8 @@ else:
 
 frame = display.new_frame()
 
-display.draw_clock(10, 40, 120, twelve_hour, clk.tm_min)
-display.draw_clock(270, 200, 40, (twelve_hour+3) % 12, clk.tm_min)
+display.draw_clock(5, 40, 126, twelve_hour, clk.tm_min)
+display.draw_clock(330, 230, 30, (twelve_hour+3) % 12, clk.tm_min)
 
 title_group = displayio.Group(max_size=2, scale=2, x=20, y=20)
 title_group.append(
