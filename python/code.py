@@ -10,6 +10,7 @@ import adafruit_bme280
 import adafruit_ds3231
 
 import eclockhw
+import eclocknet
 import eclockui
 
 ALTITUDE_ADJUSTMENT = 11.45
@@ -21,6 +22,8 @@ bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, address=0x76)
 bme280.sea_level_pressure = 1013.25
 battery = eclockhw.Battery(board.VOLTAGE_MONITOR)
 display = eclockui.Display()
+
+eclocknet.net_test()
 
 temperature = rtc.temperature
 voltage = battery.voltage()
