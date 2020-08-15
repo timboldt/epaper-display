@@ -25,6 +25,16 @@ while True:
     temperature = rtc.temperature
     voltage = battery.voltage()
     clk = rtc.datetime
+    if clk.tm_hour < 12:
+        am_pm = "am"
+    else:
+        am_pm = "pm"
+    if clk.tm_hour == 0:
+        twelve_hour = 12
+    elif clk.tm_hour > 12:
+        twelve_hour = clk.tm_hour - 12
+    else:
+        twelve_hour = clk.tm_hour
 
     frame = display.new_frame()
 
@@ -32,12 +42,13 @@ while True:
     title_group.append(
         label.Label(
             terminalio.FONT,
-            text="{}/{}/{} {}:{:02}".format(
+            text="{}/{}/{} {}:{:02} {}".format(
                 clk.tm_year,
                 clk.tm_mon,
                 clk.tm_mday,
-                clk.tm_hour,
-                clk.tm_min),
+                twelve_hour,
+                clk.tm_min,
+                am_pm),
             color=display.FOREGROUND_COLOR))
     frame.append(title_group)
 
