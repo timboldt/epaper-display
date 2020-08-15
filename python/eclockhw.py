@@ -1,19 +1,18 @@
 
 import analogio
-import board
 from digitalio import DigitalInOut, Direction
 import time
 
 class Battery():
-    def __init__(self):
-        self._adc = analogio.AnalogIn(board.VOLTAGE_MONITOR)
+    def __init__(self, pin):
+        self._adc = analogio.AnalogIn(pin)
 
     def voltage(self):
         return self._adc.value * 3.3 / 65536.0 * 2.0
 
 class PowerSwitch():
-    def __init__(self):
-        self._done = DigitalInOut(board.D5)
+    def __init__(self, pin):
+        self._done = DigitalInOut(pin)
         self._done.direction = Direction.OUTPUT
         self._done.value = False
     

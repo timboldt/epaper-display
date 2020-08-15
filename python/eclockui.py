@@ -4,6 +4,7 @@ import terminalio
 import time
 
 import adafruit_il0398
+from adafruit_display_shapes.rect import Rect
 
 class Display():
     def __init__(self):
@@ -13,8 +14,8 @@ class Display():
         self.FOREGROUND_COLOR = BLACK
         self.BACKGROUND_COLOR = WHITE
 
-        DISPLAY_WIDTH = 400
-        DISPLAY_HEIGHT = 300
+        self.DISPLAY_WIDTH = 400
+        self.DISPLAY_HEIGHT = 300
 
         displayio.release_displays()
 
@@ -26,18 +27,17 @@ class Display():
         display_bus = displayio.FourWire(spi, command=epd_dc, chip_select=epd_cs, reset=epd_reset,
                                         baudrate=1000000)
         time.sleep(1)
-        self._display = adafruit_il0398.IL0398(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT, seconds_per_frame=20,
-                                        busy_pin=epd_busy)
-        # TODO: This seems inefficient.
-        self._background_bitmap = displayio.Bitmap(DISPLAY_WIDTH, DISPLAY_HEIGHT, 1)
-        self._palette = displayio.Palette(1)
-        self._palette[0] = self.BACKGROUND_COLOR
+        self._display = adafruit_il0398.IL0398(
+            display_bus,
+            width=self.DISPLAY_WIDTH,
+            height=self.DISPLAY_HEIGHT,
+            seconds_per_frame=20,
+            busy_pin=epd_busy)
 
     def new_frame(self):
         self._frame = displayio.Group(max_size=10)
-        # TODO: See if a plain rectangle would work instead.
-        bg = displayio.TileGrid(self._background_bitmap, pixel_shader=self._palette)
-        self._frame.append(bg)
+        rect = Rect(0, 0, self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT, fill=self.BACKGROUND_COLOR)
+        self._frame.append(rect)
         return self._frame
 
     def show(self):
