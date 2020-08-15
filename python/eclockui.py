@@ -1,10 +1,16 @@
 import board
 import displayio
+import math
 import terminalio
 import time
 
 import adafruit_il0398
 from adafruit_display_shapes.rect import Rect
+from adafruit_display_shapes.circle import Circle
+from adafruit_display_shapes.triangle import Triangle
+from adafruit_display_shapes.line import Line
+#from adafruit_display_shapes.polygon import Polygon
+
 
 class Display():
     def __init__(self):
@@ -19,13 +25,13 @@ class Display():
 
         displayio.release_displays()
 
-        spi = board.SPI() # Uses SCK and MOSI
+        spi = board.SPI()  # Uses SCK and MOSI
         epd_cs = board.A5
         epd_dc = board.A4
         epd_reset = board.A3
         epd_busy = board.A2
         display_bus = displayio.FourWire(spi, command=epd_dc, chip_select=epd_cs, reset=epd_reset,
-                                        baudrate=1000000)
+                                         baudrate=1000000)
         time.sleep(1)
         self._display = adafruit_il0398.IL0398(
             display_bus,
@@ -36,7 +42,8 @@ class Display():
 
     def new_frame(self):
         self._frame = displayio.Group(max_size=10)
-        rect = Rect(0, 0, self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT, fill=self.BACKGROUND_COLOR)
+        rect = Rect(0, 0, self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT,
+                    fill=self.BACKGROUND_COLOR)
         self._frame.append(rect)
         return self._frame
 
@@ -46,6 +53,88 @@ class Display():
         # TODO: Detect when EPD is done refreshing.
         time.sleep(5)
 
+    def draw_clock(self, x, y, radius, hour, minute):
+        grp = displayio.Group(max_size=20, scale=1, x=x, y=y)
 
+        # Draw the clock outline.
+        grp.append(
+            Circle(
+                radius, radius,
+                radius,
+                outline=self.FOREGROUND_COLOR,
+                stroke=int(radius*0.05)+1))
 
+        # Draw the tick marks.
+        for i in range(12):
+            dx = math.sin(i / 12 * 2 * math.pi)
+            dy = math.cos(i / 12 * 2 * math.pi)
+            grp.append(
+                Line(
+                    int(radius + radius*0.85*dx),
+                    int(radius - radius*0.85*dy),
+                    int(radius + radius*0.99*dx),
+                    int(radius - radius*0.99*dy),
+                    self.FOREGROUND_COLOR)
+            )
 
+        #     const int16_t hour_radius = 55;
+        #     const int16_t minute_radius = 95;
+        #     const int16_t hour_width = 6;
+        #     const int16_t minute_width = 4;
+
+        # Draw the hour hand.
+        hour_angle = (hour * 60 + minute) / 60 / 12 * 2 * math.pi
+        hx = math.sin(hour_angle)
+        hy = math.cos(hour_angle)
+        grp.append(
+            Triangle(
+                int(radius + radius*0.66*hx), int(radius - radius*0.66*hy),
+                int(radius + radius*0.07*hy), int(radius + radius*0.07*hx),
+                int(radius - radius*0.07*hy), int(radius - radius*0.07*hx),
+                outline=self.FOREGROUND_COLOR)
+        )
+        grp.append(
+            Triangle(
+                int(radius - radius*0.15*hx), int(radius + radius*0.15*hy),
+                int(radius + radius*0.07*hy), int(radius + radius*0.07*hx),
+                int(radius - radius*0.07*hy), int(radius - radius*0.07*hx),
+                outline=self.FOREGROUND_COLOR)
+        )
+
+        # Draw the minute hand.
+        minute_angle = minute / 60 * 2 * math.pi
+        mx = math.sin(minute_angle)
+        my = math.cos(minute_angle)
+        # grp.append(
+        #     Line(
+        #         int(radius),
+        #         int(radius),
+        #         int(radius + radius*0.9*mx),
+        #         int(radius - radius*0.9*my),
+        #         self.FOREGROUND_COLOR)
+        # )
+        grp.append(
+            Triangle(
+                int(radius + radius*0.92*mx), int(radius - radius*0.92*my),
+                int(radius + radius*0.05*my), int(radius + radius*0.05*mx),
+                int(radius - radius*0.05*my), int(radius - radius*0.05*mx),
+                fill=self.FOREGROUND_COLOR)
+        )
+        grp.append(
+            Triangle(
+                int(radius - radius*0.15*mx), int(radius + radius*0.15*my),
+                int(radius + radius*0.05*my), int(radius + radius*0.05*mx),
+                int(radius - radius*0.05*my), int(radius - radius*0.05*mx),
+                fill=self.FOREGROUND_COLOR)
+        )
+
+        # Draw the pin in the center.
+        grp.append(
+            Circle(
+                radius, radius,
+                int(radius*0.03),
+                fill=self.BACKGROUND_COLOR,
+                outline=self.FOREGROUND_COLOR,
+                stroke=1))
+
+        self._frame.append(grp)
