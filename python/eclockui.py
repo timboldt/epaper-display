@@ -9,7 +9,7 @@ from adafruit_display_shapes.rect import Rect
 from adafruit_display_shapes.circle import Circle
 from adafruit_display_shapes.triangle import Triangle
 from adafruit_display_shapes.line import Line
-#from adafruit_display_shapes.polygon import Polygon
+from adafruit_display_shapes.polygon import Polygon
 
 
 class Display():
@@ -77,27 +77,18 @@ class Display():
                     self.FOREGROUND_COLOR)
             )
 
-        #     const int16_t hour_radius = 55;
-        #     const int16_t minute_radius = 95;
-        #     const int16_t hour_width = 6;
-        #     const int16_t minute_width = 4;
-
         # Draw the hour hand.
         hour_angle = (hour * 60 + minute) / 60 / 12 * 2 * math.pi
         hx = math.sin(hour_angle)
         hy = math.cos(hour_angle)
         grp.append(
-            Triangle(
-                int(radius + radius*0.66*hx), int(radius - radius*0.66*hy),
-                int(radius + radius*0.07*hy), int(radius + radius*0.07*hx),
-                int(radius - radius*0.07*hy), int(radius - radius*0.07*hx),
-                outline=self.FOREGROUND_COLOR)
-        )
-        grp.append(
-            Triangle(
-                int(radius - radius*0.15*hx), int(radius + radius*0.15*hy),
-                int(radius + radius*0.07*hy), int(radius + radius*0.07*hx),
-                int(radius - radius*0.07*hy), int(radius - radius*0.07*hx),
+            Polygon(
+                [
+                    (int(radius + radius*0.66*hx), int(radius - radius*0.66*hy)),
+                    (int(radius + radius*0.07*hy), int(radius + radius*0.07*hx)),
+                    (int(radius - radius*0.15*hx), int(radius + radius*0.15*hy)),
+                    (int(radius - radius*0.07*hy), int(radius - radius*0.07*hx)),
+                ],
                 outline=self.FOREGROUND_COLOR)
         )
 
@@ -105,14 +96,6 @@ class Display():
         minute_angle = minute / 60 * 2 * math.pi
         mx = math.sin(minute_angle)
         my = math.cos(minute_angle)
-        # grp.append(
-        #     Line(
-        #         int(radius),
-        #         int(radius),
-        #         int(radius + radius*0.9*mx),
-        #         int(radius - radius*0.9*my),
-        #         self.FOREGROUND_COLOR)
-        # )
         grp.append(
             Triangle(
                 int(radius + radius*0.92*mx), int(radius - radius*0.92*my),
