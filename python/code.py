@@ -15,7 +15,7 @@ import eclockhw
 import eclocknet
 import eclockui
 
-ALTITUDE_ADJUSTMENT = 11.45
+ALTITUDE_ADJUSTMENT = 10.5
 
 tpl5111 = eclockhw.PowerSwitch(board.D5)
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -24,9 +24,9 @@ bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, address=0x76)
 battery = eclockhw.Battery(board.VOLTAGE_MONITOR)
 display = eclockui.Display()
 net = eclocknet.NetCache(
-    cs = DigitalInOut(board.D13),
-    ready = DigitalInOut(board.D11),
-    reset = DigitalInOut(board.D12))
+    cs=DigitalInOut(board.D13),
+    ready=DigitalInOut(board.D11),
+    reset=DigitalInOut(board.D12))
 
 if net.seconds_since_last_refresh(rtc) > 60:
     net.refresh(rtc)
@@ -70,12 +70,15 @@ text = '\n'.join([
         clk.tm_year, clk.tm_mon, clk.tm_mday
     ),
     "{}:{:02}:{:02}".format(clk.tm_hour, clk.tm_min, clk.tm_sec),
-    "Temp.: {:.2f} C".format(bme280.temperature),
-    "Humidity: {:0.1f}%".format(bme280.humidity),
-    "Pressure: {:0.1f}\nRaw: {:0.1f}".format(
-        bme280.pressure + ALTITUDE_ADJUSTMENT, bme280.pressure),
     "Battery: {:.2f} V".format(voltage),
-    "Bitcoin: {:.0f} USD".format(net["btc_usd"])
+    "Bitcoin: {:.0f} USD".format(net["btc_usd"]),
+    "Clock: {:.2f} C".format(rtc.temperature),
+    "Inside: {:.2f} C".format(bme280.temperature),
+    "Inside: {:0.1f}%".format(bme280.humidity),
+    "Inside: {:0.1f} hPa".format(bme280.pressure + ALTITUDE_ADJUSTMENT),
+    "Outside: {:.2f} C".format(net["temperature"]),
+    "Outside: {:.1f}%".format(net["humidity"]),
+    "Outside: {:.1f} hPa".format(net["pressure"])
 ])
 print(text)
 text_group.append(

@@ -37,6 +37,7 @@ class NetCache():
             return
         self._get_net_time(rtc)
         self._get_btc_price()
+        self._get_weather()
         # disconnect
         # update cache
 
@@ -83,12 +84,29 @@ class NetCache():
 
     def _get_btc_price(self):
         try:
-            print("Fetching Bitcoing price from network...")
+            print("Fetching Bitcoin price from network...")
             r = requests.get("http://api.coindesk.com/v1/bpi/currentprice/USD.json")
             j = r.json()
             btc = float(j["bpi"]["USD"]["rate_float"])
             print("Bitcoin price:", btc)
             self._cache["btc_usd"] = btc
+            r.close()
+        except RuntimeError as e:
+            print("HTTP request failed: ", e)
+
+
+    def _get_weather(self):
+        try:
+            print("Fetching weather data from network...")
+            r = requests.get("http://api.openweathermap.org/data/2.5/weather?id=5383777&units=metric&appid=" + secrets.OPEN_WEATHER_KEY)
+            j = r.json()
+            temperature = float(j["main"]["temp"])
+            pressure = float(j["main"]["pressure"])
+            humidity = float(j["main"]["humidity"])
+            print("Weather:", temperature, pressure, humidity)
+            self._cache["temperature"] = temperature
+            self._cache["pressure"] = pressure
+            self._cache["humidity"] = humidity
             r.close()
         except RuntimeError as e:
             print("HTTP request failed: ", e)
