@@ -1,6 +1,8 @@
 import board
 import busio
 import displayio
+from digitalio import DigitalInOut
+import microcontroller
 import supervisor
 import terminalio
 import time
@@ -19,11 +21,15 @@ tpl5111 = eclockhw.PowerSwitch(board.D5)
 i2c = busio.I2C(board.SCL, board.SDA)
 rtc = adafruit_ds3231.DS3231(i2c)
 bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c, address=0x76)
-bme280.sea_level_pressure = 1013.25
 battery = eclockhw.Battery(board.VOLTAGE_MONITOR)
 display = eclockui.Display()
+net = eclocknet.NetCache(
+    cs = DigitalInOut(board.D13),
+    ready = DigitalInOut(board.D11),
+    reset = DigitalInOut(board.D12))
 
-eclocknet.net_test()
+if net.seconds_since_last_refresh(rtc) > 60:
+    net.refresh(rtc)
 
 temperature = rtc.temperature
 voltage = battery.voltage()

@@ -1,6 +1,7 @@
 import board
 import busio
-from digitalio import DigitalInOut
+import microcontroller
+import time
 
 from adafruit_esp32spi import adafruit_esp32spi
 import adafruit_esp32spi.adafruit_esp32spi_socket as socket
@@ -14,34 +15,75 @@ except ImportError:
     raise
 
 
-def net_test():
-    pass
-    # esp32_cs = DigitalInOut(board.D13)
-    # esp32_ready = DigitalInOut(board.D11)
-    # esp32_reset = DigitalInOut(board.D12)
+class NetCache():
+    def __init__(self, cs, ready, reset):
+        self._cs = cs
+        self._ready = ready
+        self._reset = reset
+        # TODO: load cache
+        # print(len(microcontroller.nvm))
+        self._cache = {"last_refresh": 0}
+        self._conn = None
 
-    # esp = adafruit_esp32spi.ESP_SPIcontrol(
-    #     board.SPI(), esp32_cs, esp32_ready, esp32_reset)
+    def seconds_since_last_refresh(self, rtc):
+        if rtc.lost_power:
+            return 1e6
 
-    # requests.set_socket(socket, esp)
+        return time.mktime(rtc.datetime) - self._cache["last_refresh"]
 
-    # if esp.status == adafruit_esp32spi.WL_IDLE_STATUS:
-    #     print("ESP32 found and in idle mode")
-    # print("Firmware vers.", esp.firmware_version)
-    # print("MAC addr:", [hex(i) for i in esp.MAC_address])
+    def refresh(self, rtc):
+        self._connect()
+        if not self._conn.is_connected:
+            return
+        self._get_net_time(rtc)
+        # get network stuff
+        # disconnect
+        # update cache
+        # also keep track of time for RTC
 
-    # for ap in esp.scan_networks():
-    #     print("\t%s\t\tRSSI: %d" % (str(ap['ssid'], 'utf-8'), ap['rssi']))
+    def __getitem__(self, key):
+        return self._cache[key]
 
-    # print("Connecting to AP...")
-    # while not esp.is_connected:
-    #     try:
-    #         esp.connect_AP(secrets.WIFI_SSID, secrets.WIFI_PASSWORD)
-    #     except RuntimeError as e:
-    #         print("could not connect to AP, retrying: ", e)
-    #         continue
-    # print("Connected to", str(esp.ssid, "utf-8"), "\tRSSI:", esp.rssi)
-    # print("My IP address is", esp.pretty_ip(esp.ip_address))
+    def _connect(self):
+        try:
+            self._conn = adafruit_esp32spi.ESP_SPIcontrol(
+                board.SPI(), self._cs, self._ready, self._reset)
+            requests.set_socket(socket, self._conn)
+            print("Airlift Firmware:", str(
+                self._conn.firmware_version, "utf-8")[:-1])
+            print("MAC Address:", "-".join([hex(i)[-2:]
+                                            for i in self._conn.MAC_address]))
+
+            print("Connecting to WiFi...")
+            if not self._conn.is_connected:
+                self._conn.connect_AP(secrets.WIFI_SSID, secrets.WIFI_PASSWORD)
+            print("Connected to", str(self._conn.ssid,
+                                      "utf-8"), "RSSI:", self._conn.rssi)
+        except RuntimeError as e:
+            print("WiFi connection failed: ", e)
+            # TODO: Close dangling connection better?
+            self._conn = None
+
+    def _disconnect(self):
+        # TODO
+        pass
+
+    def _get_net_time(self, rtc):
+        try:
+            print("Fetching current time from network...")
+            r = requests.get("http://worldtimeapi.org/api/ip")
+            trtc = time.mktime(rtc.datetime)
+            j = r.json()
+            tnet = j["unixtime"] + j["raw_offset"] + j["dst_offset"]
+            rtc.datetime = time.localtime(tnet)
+            print("Adjusted DS3231 clock by", trtc - tnet, "seconds.")
+            print(rtc.datetime)
+            r.close()
+        except RuntimeError as e:
+            print("WiFi connection failed: ", e)
+            # TODO: Close dangling connection better?
+            self._conn = None
+
     # print(
     #     "IP lookup adafruit.com: %s" % esp.pretty_ip(
     #         esp.get_host_by_name("adafruit.com"))
@@ -57,4 +99,11 @@ def net_test():
     # print("-" * 40)
     # r.close()
 
-    # print("Done!")
+    # print()
+    # JSON_URL = "http://worldtimeapi.org/api/ip"
+    # print("Fetching json from", JSON_URL)
+    # r = requests.get(JSON_URL)
+    # print("-" * 40)
+    # print(r.json()["datetime"])
+    # print("-" * 40)
+    # r.close()
