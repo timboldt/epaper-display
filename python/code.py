@@ -7,6 +7,7 @@ import supervisor
 import terminalio
 import time
 
+from adafruit_bitmap_font import bitmap_font
 from adafruit_display_text import label
 import adafruit_bme280
 import adafruit_ds3231
@@ -28,6 +29,8 @@ net = eclocknet.NetCache(
     ready=DigitalInOut(board.D11),
     reset=DigitalInOut(board.D12))
 
+font = terminalio.FONT #bitmap_font.load_font("/cantarell-18.bdf")
+
 if net.seconds_since_last_refresh(rtc) > 3600:
     net.refresh(rtc)
 
@@ -47,24 +50,11 @@ else:
 
 frame = display.new_frame()
 
+display.draw_date(60, 15, font, clk)
 display.draw_clock(5, 40, 126, twelve_hour, clk.tm_min)
 display.draw_clock(330, 230, 30, (twelve_hour+3) % 12, clk.tm_min)
 
-title_group = displayio.Group(max_size=2, scale=2, x=20, y=20)
-title_group.append(
-    label.Label(
-        terminalio.FONT,
-        text="{}/{}/{} {}:{:02} {}".format(
-            clk.tm_year,
-            clk.tm_mon,
-            clk.tm_mday,
-            twelve_hour,
-            clk.tm_min,
-            am_pm),
-        color=display.FOREGROUND_COLOR))
-frame.append(title_group)
-
-text_group = displayio.Group(max_size=2, scale=1, x=290, y=100)
+text_group = displayio.Group(max_size=2, scale=1, x=290, y=130)
 text = '\n'.join([
     "{}:{:02}:{:02}".format(clk.tm_hour, clk.tm_min, clk.tm_sec),
     "Battery: {:.2f} V".format(voltage),

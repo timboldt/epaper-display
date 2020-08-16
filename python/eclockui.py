@@ -10,6 +10,7 @@ from adafruit_display_shapes.circle import Circle
 from adafruit_display_shapes.triangle import Triangle
 from adafruit_display_shapes.line import Line
 from adafruit_display_shapes.polygon import Polygon
+from adafruit_display_text import label
 
 
 class Display():
@@ -53,8 +54,22 @@ class Display():
         # TODO: Detect when EPD is done refreshing.
         time.sleep(5)
 
+    def draw_date(self, x, y, font, dt):
+        mon = ["Jan", "Feb", "Mar", "Apr", "May","Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        dow = ["Monday", "Tuesday", "wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        g = displayio.Group(max_size=1, scale=2, x=x, y=y)
+        g.append(
+            label.Label(
+                font,
+                text="{} {} {}".format(
+                    dow[dt.tm_wday],
+                    mon[dt.tm_mon - 1],
+                    dt.tm_mday),
+                color=self.FOREGROUND_COLOR))
+        self._frame.append(g)
+
     def draw_clock(self, x, y, radius, hour, minute):
-        grp = displayio.Group(max_size=20, scale=1, x=x, y=y)
+        grp = displayio.Group(max_size=20, x=x, y=y)
 
         # Draw the clock outline.
         grp.append(
