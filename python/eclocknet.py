@@ -36,13 +36,12 @@ class NetCache():
         if not self._conn.is_connected:
             return
         self._get_net_time(rtc)
-        # get network stuff
+        self._get_btc_price()
         # disconnect
         # update cache
-        # also keep track of time for RTC
 
     def __getitem__(self, key):
-        return self._cache[key]
+        return self._cache.get(key, 0)
 
     def _connect(self):
         try:
@@ -77,33 +76,19 @@ class NetCache():
             tnet = j["unixtime"] + j["raw_offset"] + j["dst_offset"]
             rtc.datetime = time.localtime(tnet)
             print("Adjusted DS3231 clock by", trtc - tnet, "seconds.")
-            print(rtc.datetime)
+            self._cache["last_refresh"] = tnet
             r.close()
         except RuntimeError as e:
-            print("WiFi connection failed: ", e)
-            # TODO: Close dangling connection better?
-            self._conn = None
+            print("HTTP request failed: ", e)
 
-    # print(
-    #     "IP lookup adafruit.com: %s" % esp.pretty_ip(
-    #         esp.get_host_by_name("adafruit.com"))
-    # )
-    # print("Ping google.com: %d ms" % esp.ping("google.com"))
-
-    # print()
-    # JSON_URL = "http://api.coindesk.com/v1/bpi/currentprice/USD.json"
-    # print("Fetching json from", JSON_URL)
-    # r = requests.get(JSON_URL)
-    # print("-" * 40)
-    # print(r.json())
-    # print("-" * 40)
-    # r.close()
-
-    # print()
-    # JSON_URL = "http://worldtimeapi.org/api/ip"
-    # print("Fetching json from", JSON_URL)
-    # r = requests.get(JSON_URL)
-    # print("-" * 40)
-    # print(r.json()["datetime"])
-    # print("-" * 40)
-    # r.close()
+    def _get_btc_price(self):
+        try:
+            print("Fetching Bitcoing price from network...")
+            r = requests.get("http://api.coindesk.com/v1/bpi/currentprice/USD.json")
+            j = r.json()
+            btc = float(j["bpi"]["USD"]["rate_float"])
+            print("Bitcoin price:", btc)
+            self._cache["btc_usd"] = btc
+            r.close()
+        except RuntimeError as e:
+            print("HTTP request failed: ", e)

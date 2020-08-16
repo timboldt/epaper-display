@@ -75,6 +75,7 @@ text = '\n'.join([
     "Pressure: {:0.1f}\nRaw: {:0.1f}".format(
         bme280.pressure + ALTITUDE_ADJUSTMENT, bme280.pressure),
     "Battery: {:.2f} V".format(voltage),
+    "Bitcoin: {:.0f} USD".format(net["btc_usd"])
 ])
 print(text)
 text_group.append(
