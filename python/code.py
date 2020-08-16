@@ -28,7 +28,7 @@ net = eclocknet.NetCache(
     ready=DigitalInOut(board.D11),
     reset=DigitalInOut(board.D12))
 
-if net.seconds_since_last_refresh(rtc) > 60:
+if net.seconds_since_last_refresh(rtc) > 3600:
     net.refresh(rtc)
 
 temperature = rtc.temperature
@@ -64,21 +64,19 @@ title_group.append(
         color=display.FOREGROUND_COLOR))
 frame.append(title_group)
 
-text_group = displayio.Group(max_size=2, scale=1, x=290, y=70)
+text_group = displayio.Group(max_size=2, scale=1, x=290, y=100)
 text = '\n'.join([
-    "{}/{}/{}".format(
-        clk.tm_year, clk.tm_mon, clk.tm_mday
-    ),
     "{}:{:02}:{:02}".format(clk.tm_hour, clk.tm_min, clk.tm_sec),
     "Battery: {:.2f} V".format(voltage),
     "Bitcoin: {:.0f} USD".format(net["btc_usd"]),
     "Clock: {:.2f} C".format(rtc.temperature),
-    "Inside: {:.2f} C".format(bme280.temperature),
-    "Inside: {:0.1f}%".format(bme280.humidity),
-    "Inside: {:0.1f} hPa".format(bme280.pressure + ALTITUDE_ADJUSTMENT),
-    "Outside: {:.2f} C".format(net["temperature"]),
-    "Outside: {:.1f}%".format(net["humidity"]),
-    "Outside: {:.1f} hPa".format(net["pressure"])
+    "In: {:.2f} C".format(bme280.temperature),
+    "In: {:0.1f}%".format(bme280.humidity),
+    "In: {:0.1f} hPa".format(bme280.pressure + ALTITUDE_ADJUSTMENT),
+    "Out: {:.2f} C".format(net["temperature"]),
+    "Out: {:.1f}%".format(net["humidity"]),
+    "Out: {:.1f} hPa".format(net["pressure"]),
+    "Cache Age: {}".format(net.seconds_since_last_refresh(rtc))
 ])
 print(text)
 text_group.append(

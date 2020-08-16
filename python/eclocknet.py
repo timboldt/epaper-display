@@ -1,5 +1,6 @@
 import board
 import busio
+import json
 import microcontroller
 import time
 
@@ -20,16 +21,16 @@ class NetCache():
         self._cs = cs
         self._ready = ready
         self._reset = reset
-        # TODO: load cache
-        # print(len(microcontroller.nvm))
-        self._cache = {"last_refresh": 0}
         self._conn = None
+        self._load_cache()
 
     def seconds_since_last_refresh(self, rtc):
         if rtc.lost_power:
+            print("RTC lost power")
             return 1e6
-
-        return time.mktime(rtc.datetime) - self._cache["last_refresh"]
+        s = time.mktime(rtc.datetime) - self._cache.get("last_refresh", 0)
+        print("Cache age:", s)
+        return s
 
     def refresh(self, rtc):
         self._connect()
@@ -38,11 +39,28 @@ class NetCache():
         self._get_net_time(rtc)
         self._get_btc_price()
         self._get_weather()
-        # disconnect
-        # update cache
+        self._disconnect()
+        self._update_cache()
 
     def __getitem__(self, key):
         return self._cache.get(key, 0)
+
+    def _load_cache(self):
+        try:
+            sz = int(microcontroller.nvm[0]) + \
+                int(microcontroller.nvm[1]) * 256
+            print("Cache size:", sz)
+            s = str(microcontroller.nvm[2:sz+2], "utf-8")
+            print("Cache contents:", s)
+            self._cache = json.loads(s)
+        except RuntimeError as e:
+            print("Cache load failed: ", e)
+            self._cache = {"last_refresh": 0}
+
+    def _update_cache(self):
+        b = bytearray(json.dumps(self._cache))
+        sz = len(b)
+        microcontroller.nvm[0:sz+2] = bytearray([sz & 0xff, sz >> 8]) + b
 
     def _connect(self):
         try:
@@ -85,7 +103,8 @@ class NetCache():
     def _get_btc_price(self):
         try:
             print("Fetching Bitcoin price from network...")
-            r = requests.get("http://api.coindesk.com/v1/bpi/currentprice/USD.json")
+            r = requests.get(
+                "http://api.coindesk.com/v1/bpi/currentprice/USD.json")
             j = r.json()
             btc = float(j["bpi"]["USD"]["rate_float"])
             print("Bitcoin price:", btc)
@@ -94,11 +113,11 @@ class NetCache():
         except RuntimeError as e:
             print("HTTP request failed: ", e)
 
-
     def _get_weather(self):
         try:
             print("Fetching weather data from network...")
-            r = requests.get("http://api.openweathermap.org/data/2.5/weather?id=5383777&units=metric&appid=" + secrets.OPEN_WEATHER_KEY)
+            r = requests.get(
+                "http://api.openweathermap.org/data/2.5/weather?id=5383777&units=metric&appid=" + secrets.OPEN_WEATHER_KEY)
             j = r.json()
             temperature = float(j["main"]["temp"])
             pressure = float(j["main"]["pressure"])
