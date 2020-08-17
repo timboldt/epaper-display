@@ -31,6 +31,8 @@ void setup() {
 }
 
 void loop() {
+    SetTimeFromWeb();
+
     float outsideTemperature = 0.0;
     float outsideHumidity = 0.0;
     GetWeatherFromWeb(&outsideTemperature, &outsideHumidity);
