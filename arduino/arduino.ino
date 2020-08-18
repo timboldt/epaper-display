@@ -53,12 +53,12 @@ void loop() {
         DrawGauge(360, 60, "Month", now.day(), 1, 31);
 
         DrawGauge(260, 110, "Battery", battery_voltage, 3.3, 4.2);
-        DrawGauge(360, 110, "Clock Tmp", d23231_temperature, 20, 30);
+        DrawGauge(360, 110, "Clock Tmp", d23231_temperature, 10, 40);
 
-        DrawChoice(260, 160, temperature, (now.hour() < 22) ? 22 : 18,
+        DrawChoice(260, 160, temperature, (now.hour() < 22) ? 23 : 18,
                    outsideTemperature);
-        DrawGauge(310, 160, "Inside Tmp", temperature, 20, 30);
-        DrawGauge(360, 160, "Outside Tmp", outsideTemperature, 20, 30);
+        DrawGauge(310, 160, "Inside Tmp", temperature, 10, 40);
+        DrawGauge(360, 160, "Outside Tmp", outsideTemperature, 10, 40);
 
         // DrawChoice(260, 210, humidity, 40, outsideHumidity);
         DrawGauge(260, 210, "Pressure", pressure, 99, 101);
