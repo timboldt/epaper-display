@@ -174,3 +174,36 @@ void GetAQIFromWeb(float *o3, float *pm25) {
     *o3 = doc[0]["AQI"].as<float>();
     *pm25 = doc[1]["AQI"].as<float>();
 }
+
+void GetBTCFromWeb(float *btc) {
+    const char cacheFile[] = "btc.json";
+    const int oneHour = 3600;
+    DynamicJsonDocument doc(1024);
+    if (!ReadFromCache(cacheFile, doc, oneHour)) {
+        if (ConnectToNetwork()) {
+            HttpClient client = HttpClient(wifi, "api.coindesk.com", 80);
+            Serial.println("Requesting BTC price from Coindesk...");
+            client.get("/v1/bpi/currentprice/USD.json");
+
+            int statusCode = client.responseStatusCode();
+            if (statusCode != 200) {
+                DisconnectFromNetwork();
+                Serial.print("HTTP request failed to Coindesk: ");
+                Serial.println(statusCode);
+                return;
+            }
+            DeserializationError error =
+                deserializeJson(doc, client.responseBody());
+            DisconnectFromNetwork();
+
+            if (error) {
+                Serial.print("Could not parse data from Coindesk: ");
+                Serial.println(error.c_str());
+                return;
+            }
+            SaveDocToCache(cacheFile, doc);
+        }
+    }
+
+    *btc = doc["bpi"]["USD"]["rate_float"].as<float>();
+}

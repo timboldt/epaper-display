@@ -20,7 +20,8 @@ void MountFilesystem() {
     Serial.println("Mounted filesystem!");
 }
 
-bool ReadFromCache(String contentFileName, JsonDocument &contentDoc, float seconds) {
+bool ReadFromCache(String contentFileName, JsonDocument &contentDoc,
+                   float seconds) {
     String cacheFileName = "cache_" + contentFileName;
 
     // Read and parse the cache file.

@@ -41,6 +41,9 @@ void loop() {
     float pm25 = 0.0;
     GetAQIFromWeb(&ozone, &pm25);
 
+    float btc = 0.0;
+    GetBTCFromWeb(&btc);
+
     float temperature, humidity, pressure;
     ReadBME280(&temperature, &humidity, &pressure);
     // Convert to hPa and adjust for 100m of altitude.
@@ -54,6 +57,7 @@ void loop() {
     display.firstPage();
     do {
         display.fillScreen(GxEPD_WHITE);
+
         DrawGauge(260, 60, "Work Day", now.hour(), 8, 17);
         DrawGauge(310, 60, "Work Week", now.dayOfTheWeek(), 1, 5);
         DrawGauge(360, 60, "Month", now.day(), 1, 31);
@@ -70,9 +74,12 @@ void loop() {
         DrawGauge(310, 210, "Inside RH%", humidity, 0, 100);
         DrawGauge(360, 210, "Outside RH%", outsideHumidity, 0, 100);
 
-        DrawChoice(260, 260, pm25, 100, 100);
+        DrawChoice(260, 260, 50, 0, pm25);
         DrawGauge(310, 260, "Ozone", ozone, 0, 200);
         DrawGauge(360, 260, "PM 2.5", pm25, 0, 200);
+
+        // These constants will get old fast... :-)
+        DrawGauge(60, 260, "Bitcoin", btc, 7000, 13000);
 
         DrawDate(now);
         DrawClock(120, 120, now);
