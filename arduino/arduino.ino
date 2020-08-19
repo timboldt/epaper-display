@@ -39,6 +39,8 @@ void loop() {
 
     float temperature, humidity, pressure;
     ReadBME280(&temperature, &humidity, &pressure);
+    // Convert to hPa and adjust for 100m of altitude.
+    pressure = pressure * 10 + 12;
 
     DateTime now = rtc.now();
     float d23231_temperature = rtc.getTemperature();
@@ -60,8 +62,7 @@ void loop() {
         DrawGauge(310, 160, "Inside Tmp", temperature, 10, 40);
         DrawGauge(360, 160, "Outside Tmp", outsideTemperature, 10, 40);
 
-        // DrawChoice(260, 210, humidity, 40, outsideHumidity);
-        DrawGauge(260, 210, "Pressure", pressure, 99, 101);
+        DrawGauge(260, 210, "Pressure", pressure, 1010.25, 1016.25);
         DrawGauge(310, 210, "Inside RH%", humidity, 0, 100);
         DrawGauge(360, 210, "Outside RH%", outsideHumidity, 0, 100);
 
@@ -79,6 +80,6 @@ void loop() {
     }
 
     // In case we don't power off, wait at least 3 minutes before redrawing.
-    //LowPower.deepSleep(180000);
+    // LowPower.deepSleep(180000);
     delay(180000);
 }

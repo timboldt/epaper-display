@@ -68,7 +68,7 @@ void DrawGauge(int16_t x, int16_t y, const String &label, float value,
     const int16_t gauge_radius = 20;
     const int16_t tick_radius = 17;
     const int16_t needle_radius = 18;
-    const int16_t needle_width = 3;
+    // const int16_t needle_width = 3;
     const int16_t pin_width = 2;
 
     if (value < min_value) {
@@ -97,13 +97,23 @@ void DrawGauge(int16_t x, int16_t y, const String &label, float value,
     display.setCursor(x - fw / 2, y + gauge_radius - fh / 2);
     display.setTextColor(GxEPD_BLACK);
     display.print(label);
+    char buffer[20];
+    if (abs(value) < 100) {
+        sprintf(buffer, "%.2f", value);
+    } else {
+        sprintf(buffer, "%.1f", value);
+    }
+    String value_string(buffer);
+    display.getTextBounds(value_string, x, y, &fx, &fy, &fw, &fh);
+    display.setCursor(x - fw / 2, y + gauge_radius * 0.6 - fh / 2);
+    display.setTextColor(GxEPD_BLACK);
+    display.print(value_string);
 
     // Draw the needle.
     float angle = gauge_value * 10 / 16 * 2 * PI;
     float nx = sin(angle);
     float ny = cos(angle);
-    display.drawLine(x - 0.1 * needle_radius * nx, y + 0.1 * needle_radius * ny,
-                     x + needle_radius * nx, y - needle_radius * ny,
+    display.drawLine(x, y, x + needle_radius * nx, y - needle_radius * ny,
                      GxEPD_BLACK);
 
     // Draw the pin in the center.
