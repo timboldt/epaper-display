@@ -37,6 +37,10 @@ void loop() {
     float outsideHumidity = 0.0;
     GetWeatherFromWeb(&outsideTemperature, &outsideHumidity);
 
+    float ozone = 0.0;
+    float pm25 = 0.0;
+    GetAQIFromWeb(&ozone, &pm25);
+
     float temperature, humidity, pressure;
     ReadBME280(&temperature, &humidity, &pressure);
     // Convert to hPa and adjust for 100m of altitude.
@@ -65,6 +69,10 @@ void loop() {
         DrawGauge(260, 210, "Pressure", pressure, 1010.25, 1016.25);
         DrawGauge(310, 210, "Inside RH%", humidity, 0, 100);
         DrawGauge(360, 210, "Outside RH%", outsideHumidity, 0, 100);
+
+        DrawChoice(260, 260, pm25, 100, 100);
+        DrawGauge(310, 260, "Ozone", ozone, 0, 200);
+        DrawGauge(360, 260, "PM 2.5", pm25, 0, 200);
 
         DrawDate(now);
         DrawClock(120, 120, now);

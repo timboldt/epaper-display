@@ -100,9 +100,10 @@ void SetTimeFromWeb() {
 }
 
 void GetWeatherFromWeb(float *temperature, float *humidity) {
+    const char cacheFile[] = "weather.json";
     const int oneHour = 3600;
     DynamicJsonDocument doc(1024);
-    if (!ReadFromCache("weather.json", doc, oneHour)) {
+    if (!ReadFromCache(cacheFile, doc, oneHour)) {
         if (ConnectToNetwork()) {
             HttpClient client = HttpClient(wifi, "api.openweathermap.org", 80);
             Serial.println("Requesting weather from api.openweathermap.org...");
@@ -129,10 +130,47 @@ void GetWeatherFromWeb(float *temperature, float *humidity) {
                 Serial.println(error.c_str());
                 return;
             }
-            SaveDocToCache("weather.json", doc);
+            SaveDocToCache(cacheFile, doc);
         }
     }
 
     *temperature = doc["main"]["temp"].as<float>();
     *humidity = doc["main"]["humidity"].as<float>();
+}
+
+void GetAQIFromWeb(float *o3, float *pm25) {
+    const char cacheFile[] = "aqi.json";
+    const int oneHour = 3600;
+    DynamicJsonDocument doc(1024);
+    if (!ReadFromCache(cacheFile, doc, oneHour)) {
+        if (ConnectToNetwork()) {
+            HttpClient client = HttpClient(wifi, "www.airnowapi.org", 80);
+            Serial.println("Requesting air quality from AirNow...");
+            client.get(
+                "/aq/observation/zipCode/current/?format=application/json"
+                "&zipCode=94566&distance=25&API_KEY=" AIRNOW_API_KEY);
+
+            int statusCode = client.responseStatusCode();
+            if (statusCode != 200) {
+                DisconnectFromNetwork();
+                Serial.print("HTTP request failed to AirNow: ");
+                Serial.println(statusCode);
+                return;
+            }
+            DeserializationError error =
+                deserializeJson(doc, client.responseBody());
+            DisconnectFromNetwork();
+
+            if (error) {
+                Serial.print("Could not parse data from AirNow: ");
+                Serial.println(error.c_str());
+                return;
+            }
+            SaveDocToCache(cacheFile, doc);
+        }
+    }
+
+    // TODO: Verify that doc order is okay. If not look at "parameter".
+    *o3 = doc[0]["AQI"].as<float>();
+    *pm25 = doc[1]["AQI"].as<float>();
 }

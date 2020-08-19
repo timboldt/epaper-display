@@ -3,3 +3,4 @@
 #define SECRET_PASS ""
 
 #define OPENWEATHER_API_KEY ""
+#define AIRNOW_API_KEY ""
