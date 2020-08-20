@@ -4,3 +4,4 @@
 
 #define OPENWEATHER_API_KEY ""
 #define AIRNOW_API_KEY ""
+#define ALPHAVANTAGE_API_KEY ""

@@ -44,6 +44,10 @@ void loop() {
     float btc = 0.0;
     GetBTCFromWeb(&btc);
 
+    float sp500 = 0;
+    float sp500PctChange = 0;
+    GetSP500FromWeb(&sp500, &sp500PctChange);
+
     float temperature, humidity, pressure;
     ReadBME280(&temperature, &humidity, &pressure);
     // Convert to hPa and adjust for 100m of altitude.
@@ -80,6 +84,7 @@ void loop() {
 
         // These constants will get old fast... :-)
         DrawGauge(60, 260, "Bitcoin", btc, 7000, 13000);
+        DrawGauge(110, 260, "S&P 500", sp500PctChange*100, -5, 5);
 
         DrawDate(now);
         DrawClock(120, 120, now);

@@ -84,3 +84,4 @@ FatFileSystem fatfs;
 
 // Adafruit ESP32 Airlift.
 WiFiClient wifi;
+WiFiSSLClient wifissl;

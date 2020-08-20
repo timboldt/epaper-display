@@ -207,3 +207,38 @@ void GetBTCFromWeb(float *btc) {
 
     *btc = doc["bpi"]["USD"]["rate_float"].as<float>();
 }
+
+void GetSP500FromWeb(float *sp500, float *sp500PctChange) {
+    const char cacheFile[] = "sp500.json";
+    const int oneHour = 3600;
+    DynamicJsonDocument doc(1024);
+    if (!ReadFromCache(cacheFile, doc, oneHour)) {
+        if (ConnectToNetwork()) {
+            HttpClient client = HttpClient(wifissl, "www.alphavantage.co", 443);
+            Serial.println("Requesting SPY price from Alpha Vantage...");
+            client.get("/query?function=GLOBAL_QUOTE&symbol=SPY&apikey=" ALPHAVANTAGE_API_KEY);
+
+            int statusCode = client.responseStatusCode();
+            if (statusCode != 200) {
+                DisconnectFromNetwork();
+                Serial.print("HTTP request failed to Alpha Vantage: ");
+                Serial.println(statusCode);
+                return;
+            }
+            DeserializationError error =
+                deserializeJson(doc, client.responseBody());
+            DisconnectFromNetwork();
+
+            if (error) {
+                Serial.print("Could not parse data from Alpha Vantage: ");
+                Serial.println(error.c_str());
+                return;
+            }
+            SaveDocToCache(cacheFile, doc);
+        }
+    }
+
+    *sp500 = doc["Global Quote"]["05. price"].as<float>();
+    float change = doc["Global Quote"]["09. change"].as<float>();
+    *sp500PctChange = change/(*sp500);
+}
