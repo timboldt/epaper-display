@@ -69,7 +69,8 @@ void loop() {
         // DrawGauge(310, 60, "Work Week", now.dayOfTheWeek(), 1, 5);
         // DrawGauge(360, 110, "Clock Tmp", d23231_temperature, 10, 40);
 
-        DrawGauge(260, 60, "Month", now.day(), 1, 31);
+        //DrawGauge(260, 60, "Month", now.day(), 1, 31);
+        DrawGauge(260, 60, "Pressure", pressure, 1000, 1026.5);
         DrawGauge(360, 60, "Battery", battery_voltage, 3.3, 4.2);
 
         DrawGauge(260, 110, "Inside Tmp", temperature, 10, 40);
@@ -78,11 +79,10 @@ void loop() {
         DrawGauge(360, 110, "Outside Tmp", outsideTemperature, 10, 40);
 
         DrawGauge(260, 160, "Ozone", ozone, 0, 200);
-        DrawChoice(310, 160, 50, 0, max(pm25, ozone));
+        DrawChoice(310, 160, 100, 0, max(pm25, ozone));
         DrawGauge(360, 160, "PM 2.5", pm25, 0, 200);
 
-        DrawGauge(260, 210, "Pressure", pressure, 1000, 1026.5);
-        DrawGauge(310, 210, "Inside RH%", humidity, 0, 100);
+        DrawGauge(260, 210, "Inside RH%", humidity, 0, 100);
         DrawGauge(360, 210, "Outside RH%", outsideHumidity, 0, 100);
 
         // These constants will get old fast... :-)
