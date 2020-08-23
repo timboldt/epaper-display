@@ -62,33 +62,32 @@ void loop() {
     do {
         display.fillScreen(GxEPD_WHITE);
 
-        // These constants will get old fast... :-)
-        DrawGauge(60, 260, "Bitcoin", btc, 7000, 13000);
-        DrawGauge(160, 260, "S&P 500 %", sp500PctChange*100, -5, 5);
-        DrawGauge(210, 260, "S&P 500", sp500*10, 2000, 4000);
+        DrawDate(now);
+        DrawClock(120, 120, now);
 
-        DrawGauge(260, 60, "Work Day", now.hour(), 8, 17);
-        DrawGauge(310, 60, "Work Week", now.dayOfTheWeek(), 1, 5);
-        DrawGauge(360, 60, "Month", now.day(), 1, 31);
+        // DrawGauge(260, 60, "Work Day", now.hour(), 8, 17);
+        // DrawGauge(310, 60, "Work Week", now.dayOfTheWeek(), 1, 5);
+        // DrawGauge(360, 110, "Clock Tmp", d23231_temperature, 10, 40);
 
-        DrawGauge(260, 110, "Battery", battery_voltage, 3.3, 4.2);
-        DrawGauge(360, 110, "Clock Tmp", d23231_temperature, 10, 40);
+        DrawGauge(260, 60, "Month", now.day(), 1, 31);
+        DrawGauge(360, 60, "Battery", battery_voltage, 3.3, 4.2);
 
-        DrawChoice(260, 160, temperature, (now.hour() < 22) ? 23 : 18,
+        DrawGauge(260, 110, "Inside Tmp", temperature, 10, 40);
+        DrawChoice(310, 110, temperature, (now.hour() < 22) ? 23 : 18,
                    outsideTemperature);
-        DrawGauge(310, 160, "Inside Tmp", temperature, 10, 40);
-        DrawGauge(360, 160, "Outside Tmp", outsideTemperature, 10, 40);
+        DrawGauge(360, 110, "Outside Tmp", outsideTemperature, 10, 40);
 
-        DrawGauge(260, 210, "Pressure", pressure, 1010.25, 1016.25);
+        DrawGauge(260, 160, "Ozone", ozone, 0, 200);
+        DrawChoice(310, 160, 50, 0, max(pm25, ozone));
+        DrawGauge(360, 160, "PM 2.5", pm25, 0, 200);
+
+        DrawGauge(260, 210, "Pressure", pressure, 1000, 1026.5);
         DrawGauge(310, 210, "Inside RH%", humidity, 0, 100);
         DrawGauge(360, 210, "Outside RH%", outsideHumidity, 0, 100);
 
-        DrawChoice(260, 260, 50, 0, pm25);
-        DrawGauge(310, 260, "Ozone", ozone, 0, 200);
-        DrawGauge(360, 260, "PM 2.5", pm25, 0, 200);
-
-        DrawDate(now);
-        DrawClock(120, 120, now);
+        // These constants will get old fast... :-)
+        DrawGauge(260, 260, "Bitcoin", btc, 7000, 13000);
+        DrawGauge(360, 260, "S&P 500 %", sp500PctChange * 100, -5, 5);
     } while (display.nextPage());
     display.hibernate();
 

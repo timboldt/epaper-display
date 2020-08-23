@@ -216,7 +216,9 @@ void GetSP500FromWeb(float *sp500, float *sp500PctChange) {
         if (ConnectToNetwork()) {
             HttpClient client = HttpClient(wifissl, "www.alphavantage.co", 443);
             Serial.println("Requesting SPY price from Alpha Vantage...");
-            client.get("/query?function=GLOBAL_QUOTE&symbol=SPY&apikey=" ALPHAVANTAGE_API_KEY);
+            client.get(
+                "/query?function=GLOBAL_QUOTE&symbol=SPY&"
+                "apikey=" ALPHAVANTAGE_API_KEY);
 
             int statusCode = client.responseStatusCode();
             if (statusCode != 200) {
@@ -240,5 +242,5 @@ void GetSP500FromWeb(float *sp500, float *sp500PctChange) {
 
     *sp500 = doc["Global Quote"]["05. price"].as<float>();
     float change = doc["Global Quote"]["09. change"].as<float>();
-    *sp500PctChange = change/(*sp500);
+    *sp500PctChange = change / (*sp500);
 }
