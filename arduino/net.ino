@@ -101,9 +101,9 @@ void SetTimeFromWeb() {
 
 void GetWeatherFromWeb(float *temperature, float *humidity) {
     const char cacheFile[] = "weather.json";
-    const int oneHour = 3600;
+    const int cacheSeconds = 1000;
     DynamicJsonDocument doc(1024);
-    if (!ReadFromCache(cacheFile, doc, oneHour)) {
+    if (!ReadFromCache(cacheFile, doc, cacheSeconds)) {
         if (ConnectToNetwork()) {
             HttpClient client = HttpClient(wifi, "api.openweathermap.org", 80);
             Serial.println("Requesting weather from api.openweathermap.org...");
@@ -140,9 +140,9 @@ void GetWeatherFromWeb(float *temperature, float *humidity) {
 
 void GetAQIFromWeb(float *o3, float *pm25) {
     const char cacheFile[] = "aqi.json";
-    const int oneHour = 3600;
+    const int cacheSeconds = 1000;
     DynamicJsonDocument doc(1024);
-    if (!ReadFromCache(cacheFile, doc, oneHour)) {
+    if (!ReadFromCache(cacheFile, doc, cacheSeconds)) {
         if (ConnectToNetwork()) {
             HttpClient client = HttpClient(wifi, "www.airnowapi.org", 80);
             Serial.println("Requesting air quality from AirNow...");
@@ -177,9 +177,9 @@ void GetAQIFromWeb(float *o3, float *pm25) {
 
 void GetBTCFromWeb(float *btc) {
     const char cacheFile[] = "btc.json";
-    const int oneHour = 3600;
+    const int cacheSeconds = 1000;
     DynamicJsonDocument doc(1024);
-    if (!ReadFromCache(cacheFile, doc, oneHour)) {
+    if (!ReadFromCache(cacheFile, doc, cacheSeconds)) {
         if (ConnectToNetwork()) {
             HttpClient client = HttpClient(wifi, "api.coindesk.com", 80);
             Serial.println("Requesting BTC price from Coindesk...");
@@ -210,9 +210,9 @@ void GetBTCFromWeb(float *btc) {
 
 void GetSP500FromWeb(float *sp500, float *sp500PctChange) {
     const char cacheFile[] = "sp500.json";
-    const int oneHour = 3600;
+    const int cacheSeconds = 1000;
     DynamicJsonDocument doc(1024);
-    if (!ReadFromCache(cacheFile, doc, oneHour)) {
+    if (!ReadFromCache(cacheFile, doc, cacheSeconds)) {
         if (ConnectToNetwork()) {
             HttpClient client = HttpClient(wifissl, "www.alphavantage.co", 443);
             Serial.println("Requesting SPY price from Alpha Vantage...");
