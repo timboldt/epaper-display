@@ -44,6 +44,10 @@ void loop() {
     float btc = 0.0;
     GetBTCFromWeb(&btc);
 
+    float goog = 0;
+    float googPctChange = 0;
+    GetGOOGFromWeb(&goog, &googPctChange);
+
     float sp500 = 0;
     float sp500PctChange = 0;
     GetSP500FromWeb(&sp500, &sp500PctChange);
@@ -69,7 +73,7 @@ void loop() {
         // DrawGauge(310, 60, "Work Week", now.dayOfTheWeek(), 1, 5);
         // DrawGauge(360, 110, "Clock Tmp", d23231_temperature, 10, 40);
 
-        //DrawGauge(260, 60, "Month", now.day(), 1, 31);
+        // DrawGauge(260, 60, "Month", now.day(), 1, 31);
         DrawGauge(260, 60, "Pressure", pressure, 1000, 1026.5);
         DrawGauge(360, 60, "Battery", battery_voltage, 3.3, 4.2);
 
@@ -87,6 +91,7 @@ void loop() {
 
         // These constants will get old fast... :-)
         DrawGauge(260, 260, "Bitcoin", btc, 7000, 13000);
+        DrawGauge(310, 260, "GOOG %", googPctChange * 100, -5, 5);
         DrawGauge(360, 260, "S&P 500 %", sp500PctChange * 100, -5, 5);
     } while (display.nextPage());
     display.hibernate();
