@@ -88,6 +88,10 @@ void NvmCacheInit() {
         NvmCacheSet(CACHEKEY_IS_VALID, magicValue);
     }
 
+    NvmCacheDump();
+}
+
+void NvmCacheDump() {
     for (int i = 0; i < CACHEKEY_NUM_KEYS; i++) {
         Serial.print("Cache[");
         Serial.print(i);

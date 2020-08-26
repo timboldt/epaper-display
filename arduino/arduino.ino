@@ -58,6 +58,7 @@ void loop() {
             GetSP500FromWeb(&sp500, &sp500PctChange);
 
             DisconnectFromNetwork();
+            Serial.println("Network operations complete.");
 
             NvmCacheSet(CACHEKEY_OUTSIDE_TEMPERATURE, outsideTemperature);
             NvmCacheSet(CACHEKEY_OUTSIDE_HUMIDITY, outsideHumidity);
@@ -70,6 +71,7 @@ void loop() {
             NvmCacheSet(CACHEKEY_MARKETS_SP500_PCT, sp500PctChange);
         }
         NvmCacheSet(CACHEKEY_LAST_NET, rtc.now().unixtime());
+        NvmCacheDump();
     }
 
     float temperature, humidity, pressure;
