@@ -77,6 +77,25 @@ void SaveDocToCache(String contentFileName, JsonDocument &contentDoc) {
     cacheFile.close();
 }
 
+void NvmCacheInit() {
+    const float magicValue = 1234.5f;
+    float isValid = NvmCacheGet(CACHEKEY_IS_VALID);
+    if (isValid != magicValue) {
+        Serial.println("Initializing FRAM cache.");
+        for (int i = 0; i < CACHEKEY_NUM_KEYS; i++) {
+            NvmCacheSet(CACHEKEY_IS_VALID, 0.0f);
+        }
+        NvmCacheSet(CACHEKEY_IS_VALID, magicValue);
+    }
+
+    for (int i = 0; i < CACHEKEY_NUM_KEYS; i++) {
+        Serial.print("Cache[");
+        Serial.print(i);
+        Serial.print("]: ");
+        Serial.println(NvmCacheGet(i));
+    }
+}
+
 float NvmCacheGet(int key) {
     auto offset = key * 4;
     uint32_t raw = fram.read8(offset) | (fram.read8(offset + 1) << 8) |

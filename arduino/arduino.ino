@@ -34,31 +34,43 @@ void setup() {
 }
 
 void loop() {
-    SetTimeFromWeb();
+    NvmCacheInit();
 
-    float testval = NvmCacheGet(CACHEKEY_IS_VALID);
-    Serial.print("Testval: ");
-    Serial.println(testval);
-    NvmCacheSet(CACHEKEY_IS_VALID, testval + 3.14159);
+    float outsideTemperature = NvmCacheGet(CACHEKEY_OUTSIDE_TEMPERATURE);
+    float outsideHumidity = NvmCacheGet(CACHEKEY_OUTSIDE_HUMIDITY);
+    float ozone = NvmCacheGet(CACHEKEY_AQI_OZONE);
+    float pm25 = NvmCacheGet(CACHEKEY_AQI_PM25);
+    float btc = NvmCacheGet(CACHEKEY_MARKETS_BTC);
+    float goog = NvmCacheGet(CACHEKEY_MARKETS_GOOG);
+    float googPctChange = NvmCacheGet(CACHEKEY_MARKETS_GOOG_PCT);
+    float sp500 = NvmCacheGet(CACHEKEY_MARKETS_SP500);
+    float sp500PctChange = NvmCacheGet(CACHEKEY_MARKETS_SP500_PCT);
+    float lastNetConnect = NvmCacheGet(CACHEKEY_LAST_NET);
 
-    float outsideTemperature = 0.0;
-    float outsideHumidity = 0.0;
-    GetWeatherFromWeb(&outsideTemperature, &outsideHumidity);
+    const float NET_REFRESH_SECONDS = 900.0f;
+    if (lastNetConnect + NET_REFRESH_SECONDS < float(rtc.now().unixtime())) {
+        if (ConnectToNetwork()) {
+            SetTimeFromWeb();
+            GetWeatherFromWeb(&outsideTemperature, &outsideHumidity);
+            GetAQIFromWeb(&ozone, &pm25);
+            GetBTCFromWeb(&btc);
+            GetGOOGFromWeb(&goog, &googPctChange);
+            GetSP500FromWeb(&sp500, &sp500PctChange);
 
-    float ozone = 0.0;
-    float pm25 = 0.0;
-    GetAQIFromWeb(&ozone, &pm25);
+            DisconnectFromNetwork();
 
-    float btc = 0.0;
-    GetBTCFromWeb(&btc);
-
-    float goog = 0;
-    float googPctChange = 0;
-    GetGOOGFromWeb(&goog, &googPctChange);
-
-    float sp500 = 0;
-    float sp500PctChange = 0;
-    GetSP500FromWeb(&sp500, &sp500PctChange);
+            NvmCacheSet(CACHEKEY_OUTSIDE_TEMPERATURE, outsideTemperature);
+            NvmCacheSet(CACHEKEY_OUTSIDE_HUMIDITY, outsideHumidity);
+            NvmCacheSet(CACHEKEY_AQI_OZONE, ozone);
+            NvmCacheSet(CACHEKEY_AQI_PM25, pm25);
+            NvmCacheSet(CACHEKEY_MARKETS_BTC, btc);
+            NvmCacheSet(CACHEKEY_MARKETS_GOOG, goog);
+            NvmCacheSet(CACHEKEY_MARKETS_GOOG_PCT, googPctChange);
+            NvmCacheSet(CACHEKEY_MARKETS_SP500, sp500);
+            NvmCacheSet(CACHEKEY_MARKETS_SP500_PCT, sp500PctChange);
+        }
+        NvmCacheSet(CACHEKEY_LAST_NET, rtc.now().unixtime());
+    }
 
     float temperature, humidity, pressure;
     ReadBME280(&temperature, &humidity, &pressure);
