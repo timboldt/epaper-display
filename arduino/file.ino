@@ -76,3 +76,20 @@ void SaveDocToCache(String contentFileName, JsonDocument &contentDoc) {
     serializeJson(cacheDoc, cacheFile);
     cacheFile.close();
 }
+
+float NvmCacheGet(int key) {
+    auto offset = key * 4;
+    uint32_t raw = fram.read8(offset) | (fram.read8(offset + 1) << 8) |
+                   (fram.read8(offset + 2) << 16) |
+                   (fram.read8(offset + 3) << 24);
+    return *(float *)&raw;
+}
+
+void NvmCacheSet(int key, float value) {
+    auto offset = key * 4;
+    uint32_t raw = *(uint32_t *)&value;
+    fram.write8(offset, raw & 0xff);
+    fram.write8(offset + 1, (raw >> 8) & 0xff);
+    fram.write8(offset + 2, (raw >> 16) & 0xff);
+    fram.write8(offset + 3, raw >> 24);
+}

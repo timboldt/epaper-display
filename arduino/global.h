@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Adafruit_FRAM_I2C.h"
 #include <Adafruit_GFX.h>
 #include <Adafruit_SPIFlash.h>
 #include <Arduino.h>
@@ -42,11 +43,20 @@
 #define SPIWIFI_ACK 11   // a.k.a BUSY or READY pin
 #define ESP32_GPIO0 -1
 
+//==================
+// Misc. Consts
+//==================
+
 #define MAX_DISPLAY_BUFFER_SIZE 15000ul  // ~15k is a good compromise
 #define MAX_HEIGHT(EPD)                                        \
     (EPD::HEIGHT <= MAX_DISPLAY_BUFFER_SIZE / (EPD::WIDTH / 8) \
          ? EPD::HEIGHT                                         \
          : MAX_DISPLAY_BUFFER_SIZE / (EPD::WIDTH / 8))
+
+// Cache offsets.
+#define CACHEKEY_IS_VALID 0
+#define CACHEKEY_OUTSIDE_TEMPERATURE 1
+#define CACHEKEY_NUM_KEYS 64
 
 //==================
 // Devices.
@@ -68,6 +78,9 @@ BMx280I2C bmx280(0x76);
 
 // DS3231 Real-Time Clock.
 RTC_DS3231 rtc;
+
+// Adafruit FRAM
+Adafruit_FRAM_I2C fram;
 
 // On-board Flash Storage.
 #if defined(EXTERNAL_FLASH_USE_QSPI)

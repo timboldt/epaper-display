@@ -18,6 +18,9 @@ void setup() {
     pinMode(POWER_OFF, OUTPUT);
     digitalWrite(POWER_OFF, LOW);
 
+    if (fram.begin()) {
+        Serial.println("FRAM found.");
+    }
     MountFilesystem();
 
     if (rtc.lostPower()) {
@@ -32,6 +35,11 @@ void setup() {
 
 void loop() {
     SetTimeFromWeb();
+
+    float testval = NvmCacheGet(CACHEKEY_IS_VALID);
+    Serial.print("Testval: ");
+    Serial.println(testval);
+    NvmCacheSet(CACHEKEY_IS_VALID, testval + 3.14159);
 
     float outsideTemperature = 0.0;
     float outsideHumidity = 0.0;
