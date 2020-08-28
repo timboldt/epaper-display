@@ -1,52 +1,11 @@
 #![no_std]
 #![no_main]
 
-//! Draw a square, circle and triangle on an SSD1306-based Adafruit OLED
-//! Featherwing display using the `embedded_graphics` crate.
-//!
-//! This example is for the _Adafruit Feather M0_ series boards connected to a
-//! Adafruit OLED Featherwing, which has 128x32 pixel resolution.  I2C is used
-//! to communicate between the processor board and the display module.
-//!
-//! This example is based on:
-//! - https://github.com/jamwaffles/ssd1306/blob/master/examples/graphics_i2c_128x32.rs
-//! - https://github.com/atsamd-rs/atsamd/blob/master/boards/itsybitsy_m0/examples/i2c_ssd1306.rs
-//!
-//! You can either use the USB port on the Feather + BOSSAC or a SWD
-//! debugger/programmer to load this example onto the Feather M0 board.
-//!
-//! Adafruit Feather M0 Boards:
-//! - Feather M0 Express: https://www.adafruit.com/product/3403
-//! - Feather M0 Adalogger: https://www.adafruit.com/product/2796
-//! - Feather M0 Basic: https://www.adafruit.com/product/2772
-//!
-//! Adafruit OLED Featherwing:
-//! - https://www.adafruit.com/product/2900
-//!
-//! Other generic SSD1306 modules will work with this demo as well.
-//!
-//! Wiring connections for the Adafruit OLED Featherwing:
-//!
-//! ```
-//! OLED Featherwing -> Feather M0
-//!     GND -> GND
-//!     3v  -> 3v3
-//! GPIOSDA -> PA22 (SDA)
-//! GPIOSCL -> PA23 (SCL)
-//! ```
-//!
-//! Build this example with: `cargo build --example ssd1306_graphicsmode_128x32_i2c`
-//!
-
 extern crate embedded_graphics;
 extern crate feather_m0 as hal;
-extern crate ssd1306;
-
-// how to panic...
-#[cfg(not(feature = "use_semihosting"))]
 extern crate panic_halt;
-#[cfg(feature = "use_semihosting")]
-extern crate panic_semihosting;
+extern crate shared_bus;
+extern crate ssd1306;
 
 use hal::clock::GenericClockController;
 use hal::delay::Delay;
@@ -76,6 +35,8 @@ fn main() -> ! {
     let mut red_led = pins.d13.into_open_drain_output(&mut pins.port);
     let mut delay = Delay::new(core.SYST, &mut clocks);
 
+    delay.delay_ms(800u16);
+
     let i2c = hal::i2c_master(
         &mut clocks,
         KiloHertz(400),
@@ -86,12 +47,11 @@ fn main() -> ! {
         &mut pins.port,
     );
 
-    // NOTE the `DisplaySize` enum comes from the ssd1306 package,
-    // and currently only supports certain display sizes; see
-    // https://jamwaffles.github.io/ssd1306/master/ssd1306/prelude/enum.DisplaySize.html
+    let i2c_bus = shared_bus::BusManagerSimple::new(i2c);
+
     let mut disp: GraphicsMode<_> = Builder::new()
         .size(DisplaySize::Display128x32)
-        .connect_i2c(i2c)
+        .connect_i2c(i2c_bus.acquire_i2c())
         .into();
 
     disp.init().unwrap();
@@ -139,9 +99,9 @@ fn main() -> ! {
 
     // blink the onboard blinkenlight (digital pin 13)
     loop {
-        delay.delay_ms(200u8);
+        delay.delay_ms(800u16);
         red_led.set_high().unwrap();
-        delay.delay_ms(200u8);
+        delay.delay_ms(800u16);
         red_led.set_low().unwrap();
     }
 }

@@ -11,6 +11,7 @@ nb = "1.0.0"
 embedded-graphics = "0.6.2"
 feather_m0 = "0.7.0"
 ssd1306 = "0.3.1"
+shared-bus = "0.2.0"
 
 [dependencies.cortex-m-rt]
 version = "~0.6.12"
