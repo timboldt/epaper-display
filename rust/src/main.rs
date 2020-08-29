@@ -11,7 +11,7 @@ extern crate ssd1306;
 use hal::clock::GenericClockController;
 use hal::delay::Delay;
 use hal::entry;
-use hal::pac::{CorePeripherals, Peripherals};
+use hal::pac::{CorePeripherals, Peripherals, SCB};
 use hal::prelude::*;
 use hal::time::KiloHertz;
 
@@ -33,11 +33,35 @@ fn main() -> ! {
         &mut peripherals.SYSCTRL,
         &mut peripherals.NVMCTRL,
     );
-    let mut pins = hal::Pins::new(peripherals.PORT);
-    let mut red_led = pins.d13.into_open_drain_output(&mut pins.port);
     let mut delay = Delay::new(core.SYST, &mut clocks);
 
-    delay.delay_ms(800u16);
+    let mut pins = hal::Pins::new(peripherals.PORT);
+    let mut red_led = pins.d13.into_open_drain_output(&mut pins.port);
+    let mut power_switch = pins.d5.into_push_pull_output(&mut pins.port);
+    power_switch.set_low().unwrap();
+
+
+    /*
+    // Waveshare EPD.
+#define EPD_BUSY A2
+#define EPD_RESET A3
+#define EPD_DC A4
+#define EPD_CS A5
+
+// TPL5111.
+#define POWER_OFF 5
+
+// Voltage divider for LiPo.
+//#define VBATPIN 9
+#define VBATPIN A6
+
+// Adafruit ESP32 Airlift.
+#define SPIWIFI SPI      // The SPI port
+#define SPIWIFI_SS 13    // Chip select pin
+#define ESP32_RESETN 12  // Reset pin
+#define SPIWIFI_ACK 11   // a.k.a BUSY or READY pin
+#define ESP32_GPIO0 -1
+    */
 
     let i2c = hal::i2c_master(
         &mut clocks,
@@ -51,66 +75,72 @@ fn main() -> ! {
 
     let i2c_bus = shared_bus::BusManagerSimple::new(i2c);
 
+    // Give the peripherals time to start up before talking to them.
+    delay.delay_ms(100u16);
+
     let mut rtc = Ds323x::new_ds3231(i2c_bus.acquire_i2c());
     let _clk_temp = rtc.get_temperature().unwrap();
     let _clk_time = rtc.get_datetime().unwrap();
     //println!("Time: {}", time);
 
-    let mut disp: GraphicsMode<_> = Builder::new()
-        .size(DisplaySize::Display128x32)
-        .connect_i2c(i2c_bus.acquire_i2c())
-        .into();
+    // let mut disp: GraphicsMode<_> = Builder::new()
+    //     .size(DisplaySize::Display128x32)
+    //     .connect_i2c(i2c_bus.acquire_i2c())
+    //     .into();
 
-    disp.init().unwrap();
-    disp.flush().unwrap();
+    // disp.init().unwrap();
+    // disp.flush().unwrap();
 
-    let style = PrimitiveStyleBuilder::new()
-        .stroke_color(BinaryColor::On)
-        .stroke_width(1)
-        .build();
+    // let style = PrimitiveStyleBuilder::new()
+    //     .stroke_color(BinaryColor::On)
+    //     .stroke_width(1)
+    //     .build();
 
-    let yoffset = 8;
-    let x_max = 127;
-    let y_max = 31;
+    // let yoffset = 8;
+    // let x_max = 127;
+    // let y_max = 31;
 
-    // screen outline
-    if rtc.get_seconds().unwrap() > 30 {
-    Rectangle::new(Point::new(0, 0), Point::new(x_max, y_max))
-        .into_styled(style)
-        .draw(&mut disp)
-        .unwrap();
-    }
+    // // screen outline
+    // if rtc.get_seconds().unwrap() > 30 {
+    // Rectangle::new(Point::new(0, 0), Point::new(x_max, y_max))
+    //     .into_styled(style)
+    //     .draw(&mut disp)
+    //     .unwrap();
+    // }
 
-    // triangle
-    // 'Triangle' requires 'embedded_graphics' 0.6 or newer...
-    Triangle::new(
-        Point::new(16, 16 + yoffset),
-        Point::new(16 + 16, 16 + yoffset),
-        Point::new(16 + 8, yoffset),
-    )
-    .into_styled(style)
-    .draw(&mut disp)
-    .unwrap();
+    // // triangle
+    // // 'Triangle' requires 'embedded_graphics' 0.6 or newer...
+    // Triangle::new(
+    //     Point::new(16, 16 + yoffset),
+    //     Point::new(16 + 16, 16 + yoffset),
+    //     Point::new(16 + 8, yoffset),
+    // )
+    // .into_styled(style)
+    // .draw(&mut disp)
+    // .unwrap();
 
-    // square
-    Rectangle::new(Point::new(58, yoffset), Point::new(58 + 16, 16 + yoffset))
-        .into_styled(style)
-        .draw(&mut disp)
-        .unwrap();
+    // // square
+    // Rectangle::new(Point::new(58, yoffset), Point::new(58 + 16, 16 + yoffset))
+    //     .into_styled(style)
+    //     .draw(&mut disp)
+    //     .unwrap();
 
-    // circle
-    Circle::new(Point::new(108, yoffset + 8), 8)
-        .into_styled(style)
-        .draw(&mut disp)
-        .unwrap();
+    // // circle
+    // Circle::new(Point::new(108, yoffset + 8), 8)
+    //     .into_styled(style)
+    //     .draw(&mut disp)
+    //     .unwrap();
 
-    disp.flush().unwrap();
+    // disp.flush().unwrap();
 
-    // blink the onboard blinkenlight (digital pin 13)
-    loop {
-        delay.delay_ms(800u16);
-        red_led.set_high().unwrap();
-        delay.delay_ms(800u16);
-        red_led.set_low().unwrap();
-    }
+    red_led.set_high().unwrap();
+
+    // Tell the TPL5111 to turn off the power.
+    power_switch.set_low().unwrap();
+    delay.delay_ms(1_u16);
+    power_switch.set_high().unwrap();
+
+    // If power-off fails, sleep for a long time and then reset.
+    delay.delay_ms(60_000_u16);
+    SCB::sys_reset();
 }
