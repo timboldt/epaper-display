@@ -1,3 +1,17 @@
+//  Copyright 2020 Google LLC
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//      https://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+
 #![no_std]
 #![no_main]
 
@@ -13,10 +27,7 @@ extern crate shared_bus;
 
 mod ui;
 
-use embedded_hal::{
-    blocking::{delay::*},
-    digital::v2::*,
-};
+use embedded_hal::{blocking::delay::*, digital::v2::*};
 use hal::clock::GenericClockController;
 use hal::delay::Delay;
 use hal::entry;
@@ -38,7 +49,6 @@ fn main() -> ! {
         &mut peripherals.NVMCTRL,
     );
     let mut delay = Delay::new(core.SYST, &mut clocks);
-
     let mut pins = hal::Pins::new(peripherals.PORT);
 
     // Before doing anything else, pull the line low that is connected to the TPL5111 done pin.
@@ -47,7 +57,8 @@ fn main() -> ! {
 
     let mut red_led = pins.d13.into_open_drain_output(&mut pins.port);
 
-    let spi = hal::spi_master(
+    // Set up the common, shared SPI bus.
+    let spi_bus = shared_bus::BusManagerSimple::new(hal::spi_master(
         &mut clocks,
         MegaHertz(10),
         peripherals.SERCOM4,
@@ -56,10 +67,10 @@ fn main() -> ! {
         pins.mosi,
         pins.miso,
         &mut pins.port,
-    );
-    let spi_bus = shared_bus::BusManagerSimple::new(spi);
+    ));
 
-    let i2c = hal::i2c_master(
+    // Set up the common, shared I2C bus.
+    let i2c_bus = shared_bus::BusManagerSimple::new(hal::i2c_master(
         &mut clocks,
         KiloHertz(400),
         peripherals.SERCOM3,
@@ -67,8 +78,7 @@ fn main() -> ! {
         pins.sda,
         pins.scl,
         &mut pins.port,
-    );
-    let i2c_bus = shared_bus::BusManagerSimple::new(i2c);
+    ));
 
     /*
     // Voltage divider for LiPo.
@@ -107,7 +117,8 @@ fn main() -> ! {
         &mut delay,
     )
     .unwrap();
-    epd.update_frame(&mut epd_spi, &clock_display.buffer()).unwrap();
+    epd.update_frame(&mut epd_spi, &clock_display.buffer())
+        .unwrap();
     epd.display_frame(&mut epd_spi).unwrap();
     epd.sleep(&mut epd_spi).unwrap();
 
