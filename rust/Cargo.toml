@@ -14,6 +14,7 @@ epd-waveshare = "0.4.0"
 chrono = { version = "0.4.15", default-features = false }
 arraystring = { version = "0.3.0", default-features = false }
 profont = "0.4.0"
+wifi-nina = "0.1.2"
 
 [dependencies.feather_m0]
 version = "0.7.0"

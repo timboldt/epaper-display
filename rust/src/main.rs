@@ -24,19 +24,22 @@ extern crate feather_m0 as hal;
 extern crate panic_halt;
 extern crate profont;
 extern crate shared_bus;
+extern crate wifi_nina;
 
 mod ui;
 
 use embedded_hal::{blocking::delay::*, digital::v2::*};
+use hal::adc::Adc;
 use hal::clock::GenericClockController;
 use hal::delay::Delay;
 use hal::entry;
 use hal::pac::{CorePeripherals, Peripherals, SCB};
-//use hal::prelude::*;
+use hal::prelude::*;
 use hal::time::{KiloHertz, MegaHertz};
 
 use ds323x::{Ds323x, Rtcc};
 use epd_waveshare::{epd4in2::*, prelude::*};
+use wifi_nina::{transport::SpiTransport, Client, Wifi};
 
 #[entry]
 fn main() -> ! {
@@ -55,10 +58,8 @@ fn main() -> ! {
     let mut power_switch = pins.d5.into_push_pull_output(&mut pins.port);
     power_switch.set_low().unwrap();
 
-    let mut red_led = pins.d13.into_open_drain_output(&mut pins.port);
-
     // Set up the common, shared SPI bus.
-    let spi_bus = shared_bus::BusManagerSimple::new(hal::spi_master(
+    let spi = hal::spi_master(
         &mut clocks,
         MegaHertz(10),
         peripherals.SERCOM4,
@@ -67,7 +68,8 @@ fn main() -> ! {
         pins.mosi,
         pins.miso,
         &mut pins.port,
-    ));
+    );
+    //let spi_bus = shared_bus::BusManagerSimple::new(spi);
 
     // Set up the common, shared I2C bus.
     let i2c_bus = shared_bus::BusManagerSimple::new(hal::i2c_master(
@@ -80,17 +82,17 @@ fn main() -> ! {
         &mut pins.port,
     ));
 
-    /*
-    // Voltage divider for LiPo.
-    #define VBATPIN 9
+    let wifi_busy = pins.d11.into_floating_input(&mut pins.port);
+    let wifi_reset = pins.d12.into_open_drain_output(&mut pins.port);
+    let wifi_cs = pins.d13.into_open_drain_output(&mut pins.port);
+    let wifi_delay = |d: core::time::Duration| {delay.delay_ms(d.as_millis() as u32);};
+    let wifi_transport = Wifi::new(
+        SpiTransport::start(spi, wifi_busy, wifi_reset, wifi_cs, wifi_delay).unwrap(),
+    );
 
-    // Adafruit ESP32 Airlift.
-    #define SPIWIFI SPI      // The SPI port
-    #define SPIWIFI_SS 13    // Chip select pin
-    #define ESP32_RESETN 12  // Reset pin
-    #define SPIWIFI_ACK 11   // a.k.a BUSY or READY pin
-    #define ESP32_GPIO0 -1
-        */
+    let mut adc = Adc::adc(peripherals.ADC, &mut peripherals.PM, &mut clocks);
+    let mut vbat = pins.d9.into_function_b(&mut pins.port);
+    let raw_battery_voltage: u16 = adc.read(&mut vbat).unwrap();
 
     // Give the peripherals time to start up before talking to them.
     delay.delay_ms(100u16);
@@ -103,26 +105,24 @@ fn main() -> ! {
     clock_display.print_date(clk_time);
 
     // Display updated frame
-    let epd_busy = pins.a2.into_floating_input(&mut pins.port);
-    let epd_reset = pins.a3.into_open_drain_output(&mut pins.port);
-    let epd_dc = pins.a4.into_open_drain_output(&mut pins.port);
-    let epd_cs = pins.a5.into_open_drain_output(&mut pins.port);
-    let mut epd_spi = spi_bus.acquire_spi();
-    let mut epd = EPD4in2::new(
-        &mut epd_spi,
-        epd_cs,
-        epd_busy,
-        epd_dc,
-        epd_reset,
-        &mut delay,
-    )
-    .unwrap();
-    epd.update_frame(&mut epd_spi, &clock_display.buffer())
-        .unwrap();
-    epd.display_frame(&mut epd_spi).unwrap();
-    epd.sleep(&mut epd_spi).unwrap();
-
-    red_led.set_high().unwrap();
+    // let epd_busy = pins.a2.into_floating_input(&mut pins.port);
+    // let epd_reset = pins.a3.into_open_drain_output(&mut pins.port);
+    // let epd_dc = pins.a4.into_open_drain_output(&mut pins.port);
+    // let epd_cs = pins.a5.into_open_drain_output(&mut pins.port);
+    // let mut epd_spi = spi_bus.acquire_spi();
+    // let mut epd = EPD4in2::new(
+    //     &mut epd_spi,
+    //     epd_cs,
+    //     epd_busy,
+    //     epd_dc,
+    //     epd_reset,
+    //     &mut delay,
+    // )
+    // .unwrap();
+    // epd.update_frame(&mut epd_spi, &clock_display.buffer())
+    //     .unwrap();
+    // epd.display_frame(&mut epd_spi).unwrap();
+    // epd.sleep(&mut epd_spi).unwrap();
 
     // Tell the TPL5111 to turn off the power.
     power_switch.set_low().unwrap();
