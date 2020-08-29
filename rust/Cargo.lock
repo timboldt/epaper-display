@@ -16,6 +16,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "arraystring"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4d517c467117e1d8ca795bc8cc90857ff7f79790cca0e26f6e9462694ece0185"
+dependencies = [
+ "typenum",
+]
+
+[[package]]
 name = "as-slice"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -162,7 +171,9 @@ dependencies = [
 name = "eclock"
 version = "0.1.0"
 dependencies = [
+ "arraystring",
  "atsamd-hal",
+ "chrono",
  "cortex-m 0.6.3",
  "cortex-m-rt",
  "ds323x",
@@ -175,6 +186,7 @@ dependencies = [
  "panic-halt",
  "panic-semihosting",
  "panic_rtt",
+ "profont",
  "shared-bus",
  "usb-device",
  "usbd-serial",
@@ -345,6 +357,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04f5f085b5d71e2188cb8271e5da0161ad52c3f227a661a3c135fdf28e258b12"
 dependencies = [
  "unicode-xid",
+]
+
+[[package]]
+name = "profont"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f2f6adcc3c0b616b2075b492b29404966c1de661d68fad58698f8dfb133e25b"
+dependencies = [
+ "embedded-graphics",
 ]
 
 [[package]]

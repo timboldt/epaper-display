@@ -11,6 +11,9 @@ embedded-graphics = "0.6.2"
 shared-bus = "0.2.0"
 ds323x = "0.3.1"
 epd-waveshare = "0.4.0"
+chrono = { version = "0.4.15", default-features = false }
+arraystring = { version = "0.3.0", default-features = false }
+profont = "0.4.0"
 
 [dependencies.feather_m0]
 version = "0.7.0"
