@@ -6,13 +6,19 @@ description = "epaper clock"
 
 [dependencies]
 cortex-m = "~0.6"
-embedded-hal = "~0.2.3"
 nb = "1.0.0"
 embedded-graphics = "0.6.2"
-feather_m0 = "0.7.0"
-ssd1306 = "0.3.1"
 shared-bus = "0.2.0"
 ds323x = "0.3.1"
+epd-waveshare = "0.4.0"
+
+[dependencies.feather_m0]
+version = "0.7.0"
+features = ["unproven"]
+
+[dependencies.embedded-hal]
+version = "~0.2.3"
+features = ["unproven"]
 
 [dependencies.cortex-m-rt]
 version = "~0.6.12"
