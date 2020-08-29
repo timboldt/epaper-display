@@ -24,6 +24,7 @@ extern crate feather_m0 as hal;
 extern crate panic_halt;
 extern crate profont;
 extern crate shared_bus;
+extern crate usbd_serial;
 extern crate wifi_nina;
 
 mod ui;
@@ -36,6 +37,11 @@ use hal::entry;
 use hal::pac::{CorePeripherals, Peripherals, SCB};
 use hal::prelude::*;
 use hal::time::{KiloHertz, MegaHertz};
+
+use hal::usb::UsbBus;
+use hal::usb::usb_device::bus::UsbBusAllocator;
+use hal::usb::usb_device::prelude::*;
+use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
 use ds323x::{Ds323x, Rtcc};
 use epd_waveshare::{epd4in2::*, prelude::*};

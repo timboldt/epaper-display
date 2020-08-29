@@ -5,67 +5,33 @@ authors = ["Tim Boldt <tim.boldt@gmail.com>"]
 description = "epaper clock"
 
 [dependencies]
-cortex-m = "~0.6"
-nb = "1.0.0"
-embedded-graphics = "0.6.2"
-shared-bus = "0.2.0"
-ds323x = "0.3.1"
-epd-waveshare = "0.4.0"
-chrono = { version = "0.4.15", default-features = false }
 arraystring = { version = "0.3.0", default-features = false }
+atsamd-hal = { version = "~0.9", default-features = false }
+cortex-m = "~0.6"
+cortex-m-rt = "~0.6.12"
+ds323x = "0.3.1"
+embedded-graphics = "0.6.2"
+embedded-hal = { version = "~0.2.3", features = ["unproven"] }
+epd-waveshare = "0.4.0"
+feather_m0 = { version = "0.7.0", features = ["unproven", "usb"] }
+nb = "1.0.0"
+panic-halt = "0.2.0"
 profont = "0.4.0"
+shared-bus = "0.2.0"
+usb-device = "~0.2"
+usbd-serial =  "0.1.0"
 wifi-nina = "0.1.2"
 
-[dependencies.feather_m0]
-version = "0.7.0"
-features = ["unproven"]
-
-[dependencies.embedded-hal]
-version = "~0.2.3"
-features = ["unproven"]
-
-[dependencies.cortex-m-rt]
-version = "~0.6.12"
-optional = true
-
-[dependencies.atsamd-hal]
-version = "~0.9"
-default-features = false
-
-[dependencies.panic-abort]
-version = "~0.3"
-optional = true
-
-[dependencies.panic-halt]
-version = "0.2.0"
-optional = true
-
-[dependencies.panic-semihosting]
-version = "~0.5"
-optional = true
-
-[dependencies.panic_rtt]
-version = "~0.1"
-optional = true
-
-[dependencies.usb-device]
-version = "~0.2"
-optional = true
-
-[dependencies.usbd-serial]
-version = "~0.1"
-optional = true
-
-[features]
+#[features]
 # ask the HAL to enable atsamd21g18a support
-default = ["rt", "atsamd-hal/samd21g18a", "panic_halt"]
-rt = ["cortex-m-rt", "atsamd-hal/samd21g18a-rt"]
-unproven = ["atsamd-hal/unproven"]
-use_rtt = ["atsamd-hal/use_rtt", "panic_rtt"]
-usb = ["atsamd-hal/usb", "usb-device", "usbd-serial"]
-panic_halt = ["panic-halt"]
-panic_abort = ["panic-abort"]
-panic_semihosting = ["panic-semihosting"]
+#default = ["rt", "atsamd-hal/samd21g18a", "panic_halt"]
+#rt = ["cortex-m-rt", "atsamd-hal/samd21g18a-rt"]
+#unproven = ["atsamd-hal/unproven"]
+#use_rtt = ["atsamd-hal/use_rtt", "panic_rtt"]
+#usb = ["atsamd-hal/usb", "usb-device", "usbd-serial"]
+#panic_halt = ["panic-halt"]
+#panic_abort = ["panic-abort"]
+#panic_semihosting = ["panic-semihosting"]
 
 [profile.dev]
 incremental = false
