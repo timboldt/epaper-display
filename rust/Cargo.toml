@@ -22,17 +22,6 @@ usb-device = "~0.2"
 usbd-serial =  "0.1.0"
 wifi-nina = "0.1.2"
 
-#[features]
-# ask the HAL to enable atsamd21g18a support
-#default = ["rt", "atsamd-hal/samd21g18a", "panic_halt"]
-#rt = ["cortex-m-rt", "atsamd-hal/samd21g18a-rt"]
-#unproven = ["atsamd-hal/unproven"]
-#use_rtt = ["atsamd-hal/use_rtt", "panic_rtt"]
-#usb = ["atsamd-hal/usb", "usb-device", "usbd-serial"]
-#panic_halt = ["panic-halt"]
-#panic_abort = ["panic-abort"]
-#panic_semihosting = ["panic-semihosting"]
-
 [profile.dev]
 incremental = false
 codegen-units = 1

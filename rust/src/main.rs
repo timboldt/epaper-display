@@ -38,9 +38,9 @@ use hal::pac::{CorePeripherals, Peripherals, SCB};
 use hal::prelude::*;
 use hal::time::{KiloHertz, MegaHertz};
 
-use hal::usb::UsbBus;
 use hal::usb::usb_device::bus::UsbBusAllocator;
 use hal::usb::usb_device::prelude::*;
+use hal::usb::UsbBus;
 use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
 use ds323x::{Ds323x, Rtcc};
@@ -88,13 +88,52 @@ fn main() -> ! {
         &mut pins.port,
     ));
 
+    // Set up serial port.
+    let mut usb_bus = hal::usb_allocator(
+        peripherals.USB,
+        &mut clocks,
+        &mut peripherals.PM,
+        pins.usb_dm,
+        pins.usb_dp,
+        &mut pins.port,
+    );
+    // let mut serial = SerialPort::new(&usb_bus);
+    // let mut usb_dev = UsbDeviceBuilder::new(&usb_bus, UsbVidPid(0x239a, 0x27dd))
+    //     .product("Serial port")
+    //     .device_class(USB_CLASS_CDC)
+    //     .build();
+    // loop {
+    //     if !usb_dev.poll(&mut [&mut serial]) {
+    //         continue;
+    //     }
+    
+    //     let mut buf = [0u8; 64];
+    
+    //     match serial.read(&mut buf[..]) {
+    //         Ok(count) => {
+    //             // count bytes were read to &buf[..count]
+    //         },
+    //         Err(UsbError::WouldBlock) => {},// No data received
+    //         Err(err) => {},// An error occurred
+    //     };
+    
+    //     match serial.write(&[0x3a, 0x29]) {
+    //         Ok(count) => {
+    //             // count bytes were written
+    //         },
+    //         Err(UsbError::WouldBlock) => {},// No data could be written (buffers full)
+    //         Err(err) => {},// An error occurred
+    //     };
+    // }
+
     let wifi_busy = pins.d11.into_floating_input(&mut pins.port);
     let wifi_reset = pins.d12.into_open_drain_output(&mut pins.port);
     let wifi_cs = pins.d13.into_open_drain_output(&mut pins.port);
-    let wifi_delay = |d: core::time::Duration| {delay.delay_ms(d.as_millis() as u32);};
-    let wifi_transport = Wifi::new(
-        SpiTransport::start(spi, wifi_busy, wifi_reset, wifi_cs, wifi_delay).unwrap(),
-    );
+    let wifi_delay = |d: core::time::Duration| {
+        delay.delay_ms(d.as_millis() as u32);
+    };
+    let wifi_transport =
+        Wifi::new(SpiTransport::start(spi, wifi_busy, wifi_reset, wifi_cs, wifi_delay).unwrap());
 
     let mut adc = Adc::adc(peripherals.ADC, &mut peripherals.PM, &mut clocks);
     let mut vbat = pins.d9.into_function_b(&mut pins.port);
