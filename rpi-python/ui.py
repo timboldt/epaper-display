@@ -157,3 +157,14 @@ def draw_stoplight(img, x, y, radius, on):
             (x+radius*0.4, y-radius*-0.1),
         ],
         fill=WHITE_COLOR)
+
+def draw_stockchart(img):
+    draw = ImageDraw.Draw(img)
+    draw.rectangle(
+        [
+            (-200+240, 470),
+            (200+240, 580),
+        ],
+        fill=WHITE_COLOR,
+        outline=BLACK_COLOR,
+        width=2)

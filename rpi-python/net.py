@@ -54,3 +54,23 @@ def get_weather():
         r.close()
     except RuntimeError as e:
         print("HTTP request failed: ", e)
+
+
+def get_air_quality():
+    try:
+        print("Fetching air quality from AirNow...")
+        r = requests.get(
+            "http://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=94566&distance=25&API_KEY=" +
+            secrets.AIRNOW_API_KEY)
+        j = r.json()
+        # TODO: Verify that doc order is okay. If not look at "parameter".
+        o3 = float(j[0]["AQI"])
+        pm25 = float(j[1]["AQI"])
+        print("AQI:", o3, pm25)
+        cache["ozone"] = o3
+        cache["pm25"] = pm25
+        r.close()
+    except RuntimeError as e:
+        print("HTTP request failed: ", e)
+
+
