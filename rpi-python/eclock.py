@@ -2,11 +2,20 @@
 
 import math
 import time
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 FOREGROUND_COLOR = 0
 MEDIUM_COLOR = 128+63
 BACKGROUND_COLOR = 255
+
+
+def draw_date(img, dt):
+    draw = ImageDraw.Draw(img)
+    fnt = ImageFont.truetype("Cantarell-Regular.otf", 40)
+    date_string = time.strftime("%a, %b %d", dt)
+    (szx, _) = draw.textsize(date_string, font=fnt)
+    draw.text((800 - 10 - szx, 10), date_string,
+              font=fnt, fill=FOREGROUND_COLOR)
 
 
 def draw_clock(img, x, y, radius, hour, minute):
@@ -117,34 +126,27 @@ def draw_gauge(img, x, y, radius, lbl, rawval, minval, maxval):
         ],
         fill=FOREGROUND_COLOR)
 
-#     display.setFont(&Picopixel);
-#     int16_t fx, fy;
-#     uint16_t fw, fh;
-#     display.getTextBounds(label, x, y, &fx, &fy, &fw, &fh);
-#     display.setCursor(x - fw / 2, y + gauge_radius - fh / 2);
-#     display.setTextColor(GxEPD_BLACK);
-#     display.print(label);
-#     char buffer[20];
-#     if (abs(raw_value) < 100) {
-#         sprintf(buffer, "%.2f", raw_value);
-#     } else {
-#         sprintf(buffer, "%.1f", raw_value);
-#     }
-#     String value_string(buffer);
-#     display.getTextBounds(value_string, x, y, &fx, &fy, &fw, &fh);
-#     display.setCursor(x - fw / 2, y + gauge_radius * 0.6 - fh / 2);
-#     display.setTextColor(GxEPD_BLACK);
-#     display.print(value_string);
+    fnt = ImageFont.truetype("Cantarell-Regular.otf", 16)
+    (szx, szy) = draw.textsize(lbl, font=fnt)
+    draw.text((x - szx/2, y + radius * 1.0 - szy), lbl,
+              font=fnt, fill=FOREGROUND_COLOR)
 
+    fnt = ImageFont.truetype("Cantarell-Bold.otf", 16)
+    (szx, szy) = draw.textsize("1004.1", font=fnt)
+    draw.text((x - szx/2, y + radius * 0.55 - szy),
+              "1004.1", font=fnt, fill=FOREGROUND_COLOR)
 
 
 def main():
     now = time.localtime()
     img = Image.new("L", (800, 600), color=BACKGROUND_COLOR)
+    draw_date(img, now)
     draw_clock(img, 240, 240, 200, now.tm_hour, now.tm_min)
-    draw_gauge(img, 500, 100, 40, "Test 0", 40, 0, 100)
-    draw_gauge(img, 500, 200, 40, "Test 50", 52, 0, 100)
-    draw_gauge(img, 500, 300, 40, "Test 100", 66, 0, 100)
+    draw_gauge(img, 510, 130, 50, "Test 10", 10, 0, 100)
+    draw_gauge(img, 620, 130, 50, "Test 25", 25, 0, 100)
+    draw_gauge(img, 730, 130, 50, "Test 40", 40, 0, 100)
+    draw_gauge(img, 510, 260, 50, "Test 52", 52, 0, 100)
+    draw_gauge(img, 510, 380, 50, "Test 66", 66, 0, 100)
     img = img.resize((400, 300), resample=Image.BOX)
     img = img.quantize(4)
     img.show()
