@@ -5,6 +5,7 @@ import time
 from PIL import Image, ImageDraw
 
 FOREGROUND_COLOR = 0
+MEDIUM_COLOR = 128+63
 BACKGROUND_COLOR = 255
 
 
@@ -44,8 +45,8 @@ def draw_clock(img, x, y, radius, hour, minute):
                 (int(x - radius*0.15*hx), int(y + radius*0.15*hy)),
                 (int(x - radius*0.07*hy), int(y - radius*0.07*hx)),
         ],
-        outline=BACKGROUND_COLOR,
-        fill=FOREGROUND_COLOR)
+        fill=MEDIUM_COLOR,
+        outline=FOREGROUND_COLOR)
 
     # Draw the minute hand.
     minute_angle = minute / 60 * 2 * math.pi
@@ -58,7 +59,7 @@ def draw_clock(img, x, y, radius, hour, minute):
             (int(x - radius*0.15*mx), int(y + radius*0.15*my)),
             (int(x - radius*0.05*my), int(y - radius*0.05*mx)),
         ],
-        outline=BACKGROUND_COLOR,
+        # outline=BACKGROUND_COLOR,
         fill=FOREGROUND_COLOR)
 
     # Draw the pin in the center.
@@ -72,12 +73,13 @@ def draw_clock(img, x, y, radius, hour, minute):
         outline=FOREGROUND_COLOR,
         width=1)
 
+
 def main():
     now = time.localtime()
     im = Image.new("L", (800, 600), color=BACKGROUND_COLOR)
     print(im.format, im.size, im.mode)
     draw_clock(im, 240, 240, 200, now.tm_hour, now.tm_min)
-    im = im.resize((400, 300))
+    im = im.resize((400, 300), resample=Image.BILINEAR)
     im.show()
 
 
