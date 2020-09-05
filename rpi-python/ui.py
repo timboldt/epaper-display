@@ -2,11 +2,10 @@ import math
 import time
 from PIL import Image, ImageDraw, ImageFont
 
-BLACK_COLOR = 0
-DKGREY_COLOR = int(255*0.4)
-LTGREY_COLOR = int(255*0.7)
-WHITE_COLOR = 255
-
+BLACK_COLOR = 0x00
+DKGREY_COLOR = 0x80
+LTGREY_COLOR = 0xC0
+WHITE_COLOR = 0xFF
 
 def draw_date(img, dt):
     draw = ImageDraw.Draw(img)
@@ -27,8 +26,8 @@ def draw_clock(img, x, y, radius, hour, minute):
             (x+radius, y+radius),
         ],
         outline=BLACK_COLOR,
-        width=1)
-    # width=int(radius/30+0.5))
+        #width=3)
+        width=int(radius/30+0.5))
 
     # Draw the tick marks.
     for i in range(12):
@@ -168,3 +167,12 @@ def draw_stockchart(img):
         fill=WHITE_COLOR,
         outline=BLACK_COLOR,
         width=2)
+
+def image_correction(x):
+    if x == WHITE_COLOR:
+        return x
+    if x < DKGREY_COLOR:
+        return BLACK_COLOR
+    if x <= LTGREY_COLOR:
+         return DKGREY_COLOR
+    return LTGREY_COLOR

@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 
+import os
+import sys
 import time
+
 from PIL import Image
 
 import net
 import ui
 
+libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'third_party')
+print(libdir)
+if os.path.exists(libdir):
+    sys.path.append(libdir)
+from waveshare_epd import epd4in2
 
 def main():
     #net.get_net_time()
@@ -42,9 +50,14 @@ def main():
     ui.draw_stockchart(img)
 
     img = img.resize((400, 300), resample=Image.BOX)
-    img = img.quantize(4)
-    img.show()
+    img = Image.eval(img, ui.image_correction) 
+    #img.show()
 
+    epd = epd4in2.EPD()
+    epd.Init_4Gray()
+    epd.display_4Gray(epd.getbuffer_4Gray(img))
+    epd.sleep()
+    #epd.Dev_exit()
 
 if __name__ == "__main__":
     main()
