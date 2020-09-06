@@ -24,6 +24,7 @@ def read_network():
     net.get_btc_price()
     net.get_weather()
     net.get_air_quality()
+    net.get_sp500()
 
 def update_display():
     bme = Sensor(address=0x76)
@@ -58,8 +59,8 @@ def update_display():
                   net.cache["bme_humidity"], 0, 100)
     ui.draw_gauge(img, 730, 390, 50, "RH% Out", net.cache["humidity"], 0, 100)
 
-    ui.draw_gauge(img, 620, 520, 50, "Bitcoin",
-                  net.cache["btc_usd"], 7000, 13000)
+    ui.draw_gauge(img, 620, 520, 50, "S&P 500",
+                  net.cache["sp500"], 2000, 4000)
     ui.draw_gauge(img, 730, 520, 50, "Bitcoin",
                   net.cache["btc_usd"], 7000, 13000)
 
