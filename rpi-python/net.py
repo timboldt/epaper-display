@@ -73,20 +73,21 @@ def get_air_quality():
     except RuntimeError as e:
         print("HTTP request failed: ", e)
 
-def get_sp500():
+def get_stock_intraday(sym):
     try:
-        print("Fetching S&P 500 from AlphaVantage...")
+        print("Fetching {} stock price from AlphaVantage...".format(sym))
         r = requests.get(
-            "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=SPY&interval=15min&apikey=" +
+            "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
+            sym +
+            "&interval=15min&apikey=" +
             secrets.ALPHAVANTAGE_API_KEY)
         j = r.json()
         series = j["Time Series (15min)"]
-        sp500 = []
+        vals = []
         for t in series:
-            sp500.append(float(j["Time Series (15min)"][t]["4. close"])*10)
-        sp500.reverse()
-        print("S&P 500:", sp500[-1])
-        cache["sp500"] = sp500
+            vals.append(float(j["Time Series (15min)"][t]["4. close"]))
+        vals.reverse()
+        cache[sym + "_intraday"] = vals
         r.close()
     except RuntimeError as e:
         print("HTTP request failed: ", e)    
