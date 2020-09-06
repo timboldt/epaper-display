@@ -81,12 +81,12 @@ def get_sp500():
             secrets.ALPHAVANTAGE_API_KEY)
         j = r.json()
         series = j["Time Series (15min)"]
+        sp500 = []
         for t in series:
-            print(t)
-            spy = float(j["Time Series (15min)"][t]["4. close"])
-            break
-        print("SPY price:", spy)
-        cache["sp500"] = spy*10
+            sp500.append(float(j["Time Series (15min)"][t]["4. close"])*10)
+        sp500.reverse()
+        print("S&P 500:", sp500[-1])
+        cache["sp500"] = sp500
         r.close()
     except RuntimeError as e:
         print("HTTP request failed: ", e)    

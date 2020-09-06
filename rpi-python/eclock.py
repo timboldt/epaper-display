@@ -60,11 +60,11 @@ def update_display():
     ui.draw_gauge(img, 730, 390, 50, "RH% Out", net.cache["humidity"], 0, 100)
 
     ui.draw_gauge(img, 620, 520, 50, "S&P 500",
-                  net.cache["sp500"], 2000, 4000)
+                  net.cache["sp500"][-1], 2000, 4000)
     ui.draw_gauge(img, 730, 520, 50, "Bitcoin",
                   net.cache["btc_usd"], 7000, 13000)
 
-    ui.draw_stockchart(img)
+    ui.draw_stockchart(img, net.cache["sp500"])
 
     img = img.resize((400, 300), resample=Image.BOX)
     img = Image.eval(img, ui.image_correction)

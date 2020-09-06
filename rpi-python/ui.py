@@ -157,16 +157,28 @@ def draw_stoplight(img, x, y, radius, on):
         ],
         fill=WHITE_COLOR)
 
-def draw_stockchart(img):
+def draw_stockchart(img, vals):
+    mn = min(vals)
+    mx = max(vals)
     draw = ImageDraw.Draw(img)
-    draw.rectangle(
-        [
-            (-200+240, 470),
-            (200+240, 580),
-        ],
-        fill=WHITE_COLOR,
-        outline=BLACK_COLOR,
-        width=2)
+    left = 40
+    top = 470
+    height = 110
+    width = 400
+    points = []
+    for val in vals:
+        v = top + height * (val - mn) / (mx - mn) 
+        points.append((left, v))
+        left += 1
+    draw.line(points, fill=BLACK_COLOR, width=1)
+    # draw.rectangle(
+    #     [
+    #         (left, top),
+    #         (left+width, top + height),
+    #     ],
+    #     fill=WHITE_COLOR,
+    #     outline=BLACK_COLOR,
+    #     width=2)
 
 def image_correction(x):
     if x == WHITE_COLOR:
