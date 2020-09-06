@@ -165,7 +165,14 @@ def draw_stockchart(img, x, y, radius, vals):
     draw = ImageDraw.Draw(img)
     left = x - radius
     top = y - radius
-    height = radius * 2
+
+    valtxt = "{:.1f}%".format((vals[-1] - vals[0]) / vals[0] * 100)
+    fnt = ImageFont.truetype("Cantarell-Regular.otf", 16)
+    (szx, szy) = draw.textsize(valtxt, font=fnt)
+    draw.text((x - szx/2, y + radius - szy),
+              valtxt, font=fnt, fill=BLACK_COLOR)
+
+    height = radius * 2 - szy
     width = radius * 2
     points = []
     px = left
