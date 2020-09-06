@@ -7,6 +7,7 @@ DKGREY_COLOR = 0x80
 LTGREY_COLOR = 0xC0
 WHITE_COLOR = 0xFF
 
+
 def draw_date(img, dt):
     draw = ImageDraw.Draw(img)
     fnt = ImageFont.truetype("Cantarell-Regular.otf", 40)
@@ -26,7 +27,7 @@ def draw_clock(img, x, y, radius, hour, minute):
             (x+radius, y+radius),
         ],
         outline=BLACK_COLOR,
-        #width=3)
+        # width=3)
         width=int(radius/30+0.5))
 
     # Draw the tick marks.
@@ -157,28 +158,30 @@ def draw_stoplight(img, x, y, radius, on):
         ],
         fill=WHITE_COLOR)
 
-def draw_stockchart(img, vals):
+
+def draw_stockchart(img, x, y, radius, vals):
     mn = min(vals)
     mx = max(vals)
     draw = ImageDraw.Draw(img)
-    left = 40
-    top = 470
-    height = 110
-    width = 400
+    left = x - radius
+    top = y - radius
+    height = radius * 2
+    width = radius * 2
     points = []
+    px = left
     for val in vals:
-        v = top + height * (val - mn) / (mx - mn) 
-        points.append((left, v))
-        left += 1
+        py = top + height - height * (val - mn) / (mx - mn)
+        points.append((px, py))
+        px += width/len(vals)
     draw.line(points, fill=BLACK_COLOR, width=1)
-    # draw.rectangle(
-    #     [
-    #         (left, top),
-    #         (left+width, top + height),
-    #     ],
-    #     fill=WHITE_COLOR,
-    #     outline=BLACK_COLOR,
-    #     width=2)
+    draw.rectangle(
+        [
+            (left, top),
+            (left+width, top + height),
+        ],
+        outline=BLACK_COLOR,
+        width=2)
+
 
 def image_correction(x):
     if x == WHITE_COLOR:
@@ -186,5 +189,5 @@ def image_correction(x):
     if x < DKGREY_COLOR:
         return BLACK_COLOR
     if x <= LTGREY_COLOR:
-         return DKGREY_COLOR
+        return DKGREY_COLOR
     return LTGREY_COLOR
