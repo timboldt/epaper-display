@@ -10,17 +10,16 @@ except ImportError:
     print("Network secrets are kept in secrets.py, please add them there!")
     raise
 
-# def get_net_time():
-#     try:
-#         print("Fetching current time from network...")
-#         r = requests.get("http://worldtimeapi.org/api/ip")
-#         j = r.json()
-#         tnet = j["unixtime"] + j["raw_offset"] + j["dst_offset"]
-#         print("Current time:", tnet)
-#         storage.cache["last_refresh"] = tnet
-#         r.close()
-#     except RuntimeError as e:
-#         print("HTTP request failed: ", e)
+
+def time_since_last_fetch():
+    if "last_fetch" in storage.cache:
+        return time.time() - float(storage.cache["last_fetch"])
+    else:
+        return time.time()
+
+
+def set_last_fetch_time(t):
+    storage.cache["last_fetch"] = time.time()
 
 
 def get_btc_price():

@@ -24,19 +24,13 @@ except ImportError:
 
 
 def read_network():
-    if "last_fetch" in storage.cache:
-        last_fetch = float(storage.cache["last_fetch"])
-    else:
-        last_fetch = 0
-    print("Last fetch:", last_fetch, "Diff:", time.time() - last_fetch)
-    if last_fetch < (time.time() - 10*60):
-        # net.get_net_time()
+    if net.time_since_last_fetch() > 10*60:
         net.get_btc_price()
         net.get_weather()
         net.get_air_quality()
         net.get_stock_intraday("SPY")
         net.get_stock_intraday("GOOG")
-        storage.cache["last_fetch"] = time.time()
+        net.set_last_fetch_time(time.time())
 
 
 def read_sensors():
@@ -51,6 +45,8 @@ def read_sensors():
 def update_display():
     now = time.localtime()
     img = Image.new("L", (800, 600), color=ui.WHITE_COLOR)
+
+    ui.draw_cache_age(img, net.time_since_last_fetch())
 
     ui.draw_date(img, now)
     ui.draw_clock(img, 240, 240, 200, now.tm_hour, now.tm_min)

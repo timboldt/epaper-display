@@ -7,6 +7,11 @@ DKGREY_COLOR = 0x80
 LTGREY_COLOR = 0xC0
 WHITE_COLOR = 0xFF
 
+def draw_cache_age(img, age):
+    draw = ImageDraw.Draw(img)
+    fnt = ImageFont.truetype("Cantarell-Regular.otf", 20)
+    draw.text((3, 3), "{}".format(round(age)),
+              font=fnt, fill=BLACK_COLOR)
 
 def draw_date(img, dt):
     draw = ImageDraw.Draw(img)
