@@ -24,10 +24,11 @@ except ImportError:
 
 
 def read_network():
-    if net.time_since_last_fetch() > 10*60:
+    if net.time_since_last_fetch() > 12*60:
         net.get_btc_price()
         net.get_weather()
         net.get_air_quality()
+        net.get_stock_intraday("DIA")
         net.get_stock_intraday("SPY")
         net.get_stock_intraday("GOOG")
         net.set_last_fetch_time(time.time())
@@ -70,12 +71,18 @@ def update_display():
     ui.draw_gauge(img, 730, 390, 50, "RH% Out",
                   storage.cache["humidity"], 0, 100)
 
-    ui.draw_stockchart(img, 290, 520, 50, storage.cache["GOOG_intraday"])
-    ui.draw_gauge(img, 400, 520, 50, "Google",
+    ui.draw_gauge(img, 70, 520, 50, "DJIA",
+                  storage.cache["DIA_intraday"][-1]*100, 20000, 30000)
+    ui.draw_stockchart(img, 180, 520, 50, storage.cache["DIA_intraday"])
+
+    ui.draw_gauge(img, 290, 520, 50, "Google",
                   storage.cache["GOOG_intraday"][-1], 1000, 2000)
-    ui.draw_stockchart(img, 510, 520, 50, storage.cache["SPY_intraday"])
-    ui.draw_gauge(img, 620, 520, 50, "S&P 500",
+    ui.draw_stockchart(img, 400, 520, 50, storage.cache["GOOG_intraday"])
+
+    ui.draw_gauge(img, 510, 520, 50, "S&P 500",
                   storage.cache["SPY_intraday"][-1]*10, 2000, 4000)
+    ui.draw_stockchart(img, 620, 520, 50, storage.cache["SPY_intraday"])
+
     ui.draw_gauge(img, 730, 520, 50, "Bitcoin",
                   storage.cache["btc_usd"], 7000, 13000)
 
