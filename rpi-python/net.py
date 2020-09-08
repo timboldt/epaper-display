@@ -100,10 +100,14 @@ def get_stock_intraday(sym):
             "&token=" +
             secrets.FINHUB_API_KEY)
         j = r.json()
-        vals = []
-        vals.append(float(j["pc"]))
+        if sym + "_intraday" in storage.cache:
+            vals = storage.cache[sym + "_intraday"]
+            vals = vals[-100:]
+        else:
+            vals = []
         vals.append(float(j["c"]))
         storage.cache[sym + "_intraday"] = vals
+        storage.cache[sym + "_previous"] = float(j["pc"])
         r.close()
     except RuntimeError as e:
         print("HTTP request failed: ", e)

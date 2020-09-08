@@ -164,28 +164,35 @@ def draw_stoplight(img, x, y, radius, on):
         fill=WHITE_COLOR)
 
 
-def draw_stockchart(img, x, y, radius, vals):
+def draw_stockchart(img, x, y, radius, vals, prev):
+    vals = [prev] + vals
     mn = min(vals)
-    mx = max(vals)
+    mx = max(vals) + 1
     draw = ImageDraw.Draw(img)
     left = x - radius
     top = y - radius
 
-    valtxt = "{:.1f}%".format((vals[-1] - vals[0]) / vals[0] * 100)
+    if prev != 0:
+        valtxt = "{:.1f}%".format((vals[-1] - prev) / prev * 100)
+    else:
+        valtxt = "N/A"
+
     fnt = ImageFont.truetype("Cantarell-Regular.otf", 16)
     (szx, szy) = draw.textsize(valtxt, font=fnt)
     draw.text((x - szx/2, y + radius - szy),
-              valtxt, font=fnt, fill=BLACK_COLOR)
-
+            valtxt, font=fnt, fill=BLACK_COLOR)
     height = radius * 2 - szy
     width = radius * 2
-    points = []
-    px = left
-    for val in vals:
-        py = top + height - height * (val - mn) / (mx - mn)
-        points.append((px, py))
-        px += width/len(vals)
-    draw.line(points, fill=BLACK_COLOR, width=1)
+
+    if len(vals) > 1:
+        points = []
+        px = left
+        for val in vals:
+            py = top + height - height * (val - mn) / (mx - mn)
+            points.append((px, py))
+            px += width/len(vals)
+        draw.line(points, fill=BLACK_COLOR, width=1)
+
     draw.rectangle(
         [
             (left, top),

@@ -73,15 +73,15 @@ def update_display():
 
     ui.draw_gauge(img, 70, 520, 50, "DJIA",
                   storage.cache["DIA_intraday"][-1]*100, 20000, 30000)
-    ui.draw_stockchart(img, 180, 520, 50, storage.cache["DIA_intraday"])
+    ui.draw_stockchart(img, 180, 520, 50, storage.cache["DIA_intraday"], storage.cache["DIA_previous"])
 
     ui.draw_gauge(img, 290, 520, 50, "Google",
                   storage.cache["GOOG_intraday"][-1], 1000, 2000)
-    ui.draw_stockchart(img, 400, 520, 50, storage.cache["GOOG_intraday"])
+    ui.draw_stockchart(img, 400, 520, 50, storage.cache["GOOG_intraday"], storage.cache["GOOG_previous"])
 
     ui.draw_gauge(img, 510, 520, 50, "S&P 500",
                   storage.cache["SPY_intraday"][-1]*10, 2000, 4000)
-    ui.draw_stockchart(img, 620, 520, 50, storage.cache["SPY_intraday"])
+    ui.draw_stockchart(img, 620, 520, 50, storage.cache["SPY_intraday"], storage.cache["SPY_previous"])
 
     ui.draw_gauge(img, 730, 520, 50, "Bitcoin",
                   storage.cache["btc_usd"], 7000, 13000)
