@@ -72,21 +72,39 @@ def get_air_quality():
         print("HTTP request failed: ", e)
 
 
+# def get_stock_intraday(sym):
+#     try:
+#         print("Fetching {} stock price from AlphaVantage...".format(sym))
+#         r = requests.get(
+#             "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
+#             sym +
+#             "&interval=15min&apikey=" +
+#             secrets.ALPHAVANTAGE_API_KEY)
+#         j = r.json()
+#         series = j["Time Series (15min)"]
+#         vals = []
+#         for t in series:
+#             vals.append(float(j["Time Series (15min)"][t]["4. close"]))
+#         vals.reverse()
+#         storage.cache[sym + "_intraday"] = vals
+#         r.close()
+#     except RuntimeError as e:
+#         print("HTTP request failed: ", e)
+
 def get_stock_intraday(sym):
     try:
-        print("Fetching {} stock price from AlphaVantage...".format(sym))
+        print("Fetching {} stock price from Finhub...".format(sym))
         r = requests.get(
-            "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
+            "https://finnhub.io/api/v1/quote?symbol=" +
             sym +
-            "&interval=15min&apikey=" +
-            secrets.ALPHAVANTAGE_API_KEY)
+            "&token=" +
+            secrets.FINHUB_API_KEY)
         j = r.json()
-        series = j["Time Series (15min)"]
         vals = []
-        for t in series:
-            vals.append(float(j["Time Series (15min)"][t]["4. close"]))
-        vals.reverse()
+        vals.append(float(j["pc"]))
+        vals.append(float(j["c"]))
         storage.cache[sym + "_intraday"] = vals
         r.close()
     except RuntimeError as e:
         print("HTTP request failed: ", e)
+
