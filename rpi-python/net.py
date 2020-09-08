@@ -31,6 +31,10 @@ def get_btc_price():
         btc = float(j["bpi"]["USD"]["rate_float"])
         print("Bitcoin price:", btc)
         storage.cache["btc_usd"] = btc
+        if not "btc_history" in storage.cache:
+            storage.cache["btc_history"] = []
+        storage.cache["btc_history"].append(btc)
+        storage.cache["btc_history"] = storage.cache["btc_history"][-100:]
         r.close()
     except RuntimeError as e:
         print("HTTP request failed: ", e)

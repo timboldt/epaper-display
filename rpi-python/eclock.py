@@ -39,8 +39,12 @@ def read_sensors():
     bme_data = bme.get_data()
     storage.cache["bme_temperature"] = bme_data["temperature"]
     storage.cache["bme_humidity"] = bme_data["humidity"]
-    # Convert to hPa and adjust for 100m of altitude.
-    storage.cache["bme_pressure"] = bme_data["pressure"] * 10 + 12
+    pressure = bme_data["pressure"] + 12
+    storage.cache["bme_pressure"] = pressure
+    if not "bme_pressure_history" in storage.cache:
+        storage.cache["bme_pressure_history"] = []
+    storage.cache["bme_pressure_history"].append(pressure)
+    storage.cache["bme_pressure_history"] = storage.cache["bme_pressure_history"][-100:]
 
 
 def update_display():
@@ -65,26 +69,26 @@ def update_display():
     ui.draw_gauge(img, 730, 260, 50, "PM 2.5", storage.cache["pm25"], 0, 200)
 
     ui.draw_gauge(img, 510, 390, 50, "Pressure",
-                  storage.cache["pressure"], 1000, 1026.5)
-    ui.draw_gauge(img, 620, 390, 50, "RH% In",
+                  storage.cache["bme_pressure"], 1000, 1026.5)
+    ui.draw_chart(img, 620, 390, 50, "Pressure", storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
+    ui.draw_gauge(img, 730, 390, 50, "RH% In",
                   storage.cache["bme_humidity"], 0, 100)
-    ui.draw_gauge(img, 730, 390, 50, "RH% Out",
-                  storage.cache["humidity"], 0, 100)
 
     ui.draw_gauge(img, 70, 520, 50, "DJIA",
                   storage.cache["DIA_intraday"][-1]*100, 20000, 30000)
-    ui.draw_stockchart(img, 180, 520, 50, storage.cache["DIA_intraday"], storage.cache["DIA_previous"])
+    ui.draw_chart(img, 180, 520, 50, "DJIA", storage.cache["DIA_intraday"], storage.cache["DIA_previous"])
 
     ui.draw_gauge(img, 290, 520, 50, "Google",
                   storage.cache["GOOG_intraday"][-1], 1000, 2000)
-    ui.draw_stockchart(img, 400, 520, 50, storage.cache["GOOG_intraday"], storage.cache["GOOG_previous"])
+    ui.draw_chart(img, 400, 520, 50, "GOOG", storage.cache["GOOG_intraday"], storage.cache["GOOG_previous"])
 
     ui.draw_gauge(img, 510, 520, 50, "S&P 500",
                   storage.cache["SPY_intraday"][-1]*10, 2000, 4000)
-    ui.draw_stockchart(img, 620, 520, 50, storage.cache["SPY_intraday"], storage.cache["SPY_previous"])
 
-    ui.draw_gauge(img, 730, 520, 50, "Bitcoin",
+    ui.draw_gauge(img, 620, 520, 50, "Bitcoin",
                   storage.cache["btc_usd"], 7000, 13000)
+    if "btc_history" in storage.cache:
+        ui.draw_chart(img, 730, 520, 50, "BTC", storage.cache["btc_history"], storage.cache["btc_history"][0])
 
     img = img.resize((400, 300), resample=Image.BOX)
     img = Image.eval(img, ui.image_correction)

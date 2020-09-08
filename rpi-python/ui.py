@@ -164,18 +164,18 @@ def draw_stoplight(img, x, y, radius, on):
         fill=WHITE_COLOR)
 
 
-def draw_stockchart(img, x, y, radius, vals, prev):
+def draw_chart(img, x, y, radius, label, vals, prev):
     vals = [prev] + vals
-    mn = min(vals)
+    mn = min(vals) - 1
     mx = max(vals) + 1
     draw = ImageDraw.Draw(img)
     left = x - radius
     top = y - radius
 
     if prev != 0:
-        valtxt = "{:.1f}%".format((vals[-1] - prev) / prev * 100)
+        valtxt = "{} {:.1f}%".format(label, (vals[-1] - prev) / prev * 100)
     else:
-        valtxt = "N/A"
+        valtxt = label
 
     fnt = ImageFont.truetype("Cantarell-Regular.otf", 16)
     (szx, szy) = draw.textsize(valtxt, font=fnt)
