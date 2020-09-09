@@ -1,3 +1,17 @@
+#  Copyright 2020 Google LLC
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      https:#www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 import math
 import time
 from PIL import Image, ImageDraw, ImageFont
@@ -7,11 +21,13 @@ DKGREY_COLOR = 0x80
 LTGREY_COLOR = 0xC0
 WHITE_COLOR = 0xFF
 
+
 def draw_cache_age(img, age):
     draw = ImageDraw.Draw(img)
     fnt = ImageFont.truetype("Cantarell-Regular.otf", 20)
     draw.text((3, 3), "{}".format(round(age)),
               font=fnt, fill=BLACK_COLOR)
+
 
 def draw_date(img, dt):
     draw = ImageDraw.Draw(img)
@@ -182,7 +198,7 @@ def draw_chart(img, x, y, radius, label, vals, prev):
     fnt = ImageFont.truetype("Cantarell-Regular.otf", 16)
     (szx, szy) = draw.textsize(valtxt, font=fnt)
     draw.text((x - szx/2, y + radius - szy),
-            valtxt, font=fnt, fill=BLACK_COLOR)
+              valtxt, font=fnt, fill=BLACK_COLOR)
     height = radius * 2 - szy
     width = radius * 2
 
