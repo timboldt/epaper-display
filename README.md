@@ -12,17 +12,21 @@ The low-power thing worked out pretty well. Here is the power consumption, on ea
 
 ![](assets/power-consumption.png)
 
+It later evolved into a full-featured Raspberry Pi epaper display, which pretty much nixed the low power idea, but added a lot of functionality.
+
 ## Software
 
 This clock was my opportunity to experiment with a few different technologies.
-
-The original version used TinyGo is in the `go/` subdirectory.
-
-The second version, in the `arduino/` subdirectory was written using conventional Arduino technologies.
+1. The original version used TinyGo is in the `go/` subdirectory, running on a Feather M0.
+2. The second version, in the `arduino/` subdirectory was written using conventional Arduino technologies, running on a Feather M0 (and later, a Feather M4). This version worked extremely well and was very low power.
+3. The third version was an experiment with Circuit Python (using a Feather M4), but the memory demands were too high with all the fonts and large graphics.
+4. The fourth version was an incomplete attempt to implement it in Rust on a Feather M0.
+5. The fifth (and current) version is implemented on a Raspberry Pi, and has a lot more functionality: TrueType fonts, 4-color greyscale with anti-aliasing,
+stock charts, etc.
 
 ## Hardware
 
-I chose almost all Adafruit parts for this project, because they are well made, hassle free, and plug together like Legos.
+I originally chose almost all Adafruit parts for this project, because they are well made, hassle free, and plug together like Legos.
 
 * Adafruit Feather M0 Express
 * Adafruit DS3231 RTC Featherwing
@@ -31,6 +35,8 @@ I chose almost all Adafruit parts for this project, because they are well made, 
 * Waveshare 4.2" E-Paper Module
 * BME280 Temperature/Pressure/Humidity Sensor
 
-The end result is a clock that runs for months on a small LiPo battery.
+The end result was a clock that runs for months on a small LiPo battery.
 
 ![](assets/clock-front.jpg)
+
+(Until I switched to a Raspberry Pi, that is...)
