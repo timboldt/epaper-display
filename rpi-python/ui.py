@@ -166,8 +166,10 @@ def draw_stoplight(img, x, y, radius, on):
 
 def draw_chart(img, x, y, radius, label, vals, prev):
     vals = [prev] + vals
-    mn = min(vals) - 1
-    mx = max(vals) + 1
+    mn = min(vals) * 0.998
+    mx = max(vals) * 1.002
+    if mx == mn:
+        mx += 1e-6
     draw = ImageDraw.Draw(img)
     left = x - radius
     top = y - radius
@@ -186,11 +188,11 @@ def draw_chart(img, x, y, radius, label, vals, prev):
 
     if len(vals) > 1:
         points = []
-        px = left
+        px = left + 2
         for val in vals:
             py = top + height - height * (val - mn) / (mx - mn)
             points.append((px, py))
-            px += width/len(vals)
+            px += (width-2)/len(vals)
         draw.line(points, fill=BLACK_COLOR, width=1)
 
     draw.rectangle(

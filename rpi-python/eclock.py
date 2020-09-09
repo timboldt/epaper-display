@@ -63,24 +63,29 @@ def update_display():
     ui.draw_gauge(img, 730, 130, 50, "Temp. Out",
                   storage.cache["temperature"], 10, 40)
 
-    ui.draw_gauge(img, 510, 260, 50, "Ozone", storage.cache["ozone"], 0, 200)
+    #ui.draw_gauge(img, 510, 260, 50, "Ozone", storage.cache["ozone"], 0, 200)
+    ui.draw_chart(img, 510, 260, 50, "AQI",
+                  storage.cache["aqi_history"], storage.cache["aqi_history"][0])
     ui.draw_stoplight(img, 620, 260, 30,
                       storage.cache["ozone"] > 100 or storage.cache["pm25"] > 100)
     ui.draw_gauge(img, 730, 260, 50, "PM 2.5", storage.cache["pm25"], 0, 200)
 
     ui.draw_gauge(img, 510, 390, 50, "Pressure",
                   storage.cache["bme_pressure"], 1000, 1026.5)
-    ui.draw_chart(img, 620, 390, 50, "Pressure", storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
+    ui.draw_chart(img, 620, 390, 50, "Pressure",
+                  storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
     ui.draw_gauge(img, 730, 390, 50, "RH% In",
                   storage.cache["bme_humidity"], 0, 100)
 
     ui.draw_gauge(img, 70, 520, 50, "DJIA",
                   storage.cache["DIA_intraday"][-1]*100, 20000, 30000)
-    ui.draw_chart(img, 180, 520, 50, "DJIA", storage.cache["DIA_intraday"], storage.cache["DIA_previous"])
+    ui.draw_chart(img, 180, 520, 50, "DJIA",
+                  storage.cache["DIA_intraday"], storage.cache["DIA_previous"])
 
     ui.draw_gauge(img, 290, 520, 50, "Google",
                   storage.cache["GOOG_intraday"][-1], 1000, 2000)
-    ui.draw_chart(img, 400, 520, 50, "GOOG", storage.cache["GOOG_intraday"], storage.cache["GOOG_previous"])
+    ui.draw_chart(img, 400, 520, 50, "GOOG",
+                  storage.cache["GOOG_intraday"], storage.cache["GOOG_previous"])
 
     ui.draw_gauge(img, 510, 520, 50, "S&P 500",
                   storage.cache["SPY_intraday"][-1]*10, 2000, 4000)
@@ -88,7 +93,8 @@ def update_display():
     ui.draw_gauge(img, 620, 520, 50, "Bitcoin",
                   storage.cache["btc_usd"], 7000, 13000)
     if "btc_history" in storage.cache:
-        ui.draw_chart(img, 730, 520, 50, "BTC", storage.cache["btc_history"], storage.cache["btc_history"][0])
+        ui.draw_chart(img, 730, 520, 50, "BTC",
+                      storage.cache["btc_history"], storage.cache["btc_history"][0])
 
     img = img.resize((400, 300), resample=Image.BOX)
     img = Image.eval(img, ui.image_correction)

@@ -66,11 +66,19 @@ def get_air_quality():
             secrets.AIRNOW_API_KEY)
         j = r.json()
         # TODO: Verify that doc order is okay. If not look at "parameter".
-        o3 = float(j[0]["AQI"])
-        pm25 = float(j[1]["AQI"])
+        if len(j) == 2:
+            o3 = float(j[0]["AQI"])
+            pm25 = float(j[1]["AQI"])
+        else:
+            o3 = 0
+            pm25 = float(j[0]["AQI"])
         print("AQI:", o3, pm25)
         storage.cache["ozone"] = o3
         storage.cache["pm25"] = pm25
+        if not "aqi_history" in storage.cache:
+            storage.cache["aqi_history"] = []
+        storage.cache["aqi_history"].append(max(o3, pm25))
+        storage.cache["aqi_history"] = storage.cache["aqi_history"][-100:]
         r.close()
     except RuntimeError as e:
         print("HTTP request failed: ", e)
