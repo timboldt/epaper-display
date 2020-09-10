@@ -48,7 +48,7 @@ def get_btc_price():
         if not "btc_history" in storage.cache:
             storage.cache["btc_history"] = []
         storage.cache["btc_history"].append(btc)
-        storage.cache["btc_history"] = storage.cache["btc_history"][-100:]
+        storage.cache["btc_history"] = storage.cache["btc_history"][-480:]
         r.close()
     except RuntimeError as e:
         print("HTTP request failed: ", e)
@@ -92,7 +92,7 @@ def get_air_quality():
         if not "aqi_history" in storage.cache:
             storage.cache["aqi_history"] = []
         storage.cache["aqi_history"].append(max(o3, pm25))
-        storage.cache["aqi_history"] = storage.cache["aqi_history"][-100:]
+        storage.cache["aqi_history"] = storage.cache["aqi_history"][-120:]
         r.close()
     except RuntimeError as e:
         print("HTTP request failed: ", e)
@@ -128,7 +128,7 @@ def get_stock_intraday(sym):
         j = r.json()
         if sym + "_intraday" in storage.cache:
             vals = storage.cache[sym + "_intraday"]
-            vals = vals[-100:]
+            vals = vals[-480:]
         else:
             vals = []
         vals.append(float(j["c"]))

@@ -51,14 +51,21 @@ def read_network():
 def read_sensors():
     bme = Sensor(address=0x76)
     bme_data = bme.get_data()
-    storage.cache["bme_temperature"] = bme_data["temperature"]
+    temperature = bme_data["temperature"]
+    storage.cache["bme_temperature"] = temperature
+    if not "bme_temperature_history" in storage.cache:
+        storage.cache["bme_temperature_history"] = []
+    storage.cache["bme_temperature_history"].append(temperature)
+    storage.cache["bme_temperature_history"] = storage.cache["bme_temperature_history"][-480:]
+
     storage.cache["bme_humidity"] = bme_data["humidity"]
+
     pressure = bme_data["pressure"] + 12
     storage.cache["bme_pressure"] = pressure
     if not "bme_pressure_history" in storage.cache:
         storage.cache["bme_pressure_history"] = []
     storage.cache["bme_pressure_history"].append(pressure)
-    storage.cache["bme_pressure_history"] = storage.cache["bme_pressure_history"][-100:]
+    storage.cache["bme_pressure_history"] = storage.cache["bme_pressure_history"][-480:]
 
 
 def update_display():
@@ -70,8 +77,10 @@ def update_display():
     ui.draw_date(img, now)
     ui.draw_clock(img, 240, 240, 200, now.tm_hour, now.tm_min)
 
-    ui.draw_gauge(img, 510, 130, 50, "Temp. In",
-                  storage.cache["bme_temperature"], 10, 40)
+    ui.draw_chart(img, 510, 130, 50, "Temp. In",
+                  storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
+    # ui.draw_gauge(img, 510, 130, 50, "Temp. In",
+    #               storage.cache["bme_temperature"], 10, 40)
     ui.draw_stoplight(img, 620, 130, 30, storage.cache["temperature"] >
                       25 and storage.cache["temperature"] > storage.cache["bme_temperature"])
     ui.draw_gauge(img, 730, 130, 50, "Temp. Out",
@@ -84,10 +93,10 @@ def update_display():
                       storage.cache["ozone"] > 100 or storage.cache["pm25"] > 100)
     ui.draw_gauge(img, 730, 260, 50, "PM 2.5", storage.cache["pm25"], 0, 200)
 
-    ui.draw_gauge(img, 510, 390, 50, "Pressure",
-                  storage.cache["bme_pressure"], 1000, 1026.5)
-    ui.draw_chart(img, 620, 390, 50, "Pressure",
+    ui.draw_chart(img, 510, 390, 50, "Pressure",
                   storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
+    ui.draw_gauge(img, 620, 390, 50, "Pressure",
+                  storage.cache["bme_pressure"], 1000, 1026.5)
     ui.draw_gauge(img, 730, 390, 50, "RH% In",
                   storage.cache["bme_humidity"], 0, 100)
 
