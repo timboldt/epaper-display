@@ -77,13 +77,13 @@ def update_display():
     ui.draw_date(img, now)
     ui.draw_clock(img, 240, 240, 200, now.tm_hour, now.tm_min)
 
-    ui.draw_chart(img, 510, 130, 50, "Temp. In",
+    ui.draw_chart(img, 510, 130, 50, "°C",
                   storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
-    # ui.draw_gauge(img, 510, 130, 50, "Temp. In",
+    # ui.draw_gauge(img, 510, 130, 50, "°C Inside",
     #               storage.cache["bme_temperature"], 10, 40)
     ui.draw_stoplight(img, 620, 130, 30, storage.cache["temperature"] >
                       25 and storage.cache["temperature"] > storage.cache["bme_temperature"])
-    ui.draw_gauge(img, 730, 130, 50, "Temp. Out",
+    ui.draw_gauge(img, 730, 130, 50, "°C Outside",
                   storage.cache["temperature"], 10, 40)
 
     #ui.draw_gauge(img, 510, 260, 50, "Ozone", storage.cache["ozone"], 0, 200)
@@ -93,24 +93,24 @@ def update_display():
                       storage.cache["ozone"] > 100 or storage.cache["pm25"] > 100)
     ui.draw_gauge(img, 730, 260, 50, "PM 2.5", storage.cache["pm25"], 0, 200)
 
-    ui.draw_chart(img, 510, 390, 50, "Pressure",
+    ui.draw_chart(img, 510, 390, 50, "HPa",
                   storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
-    ui.draw_gauge(img, 620, 390, 50, "Pressure",
+    ui.draw_gauge(img, 620, 390, 50, "HPa",
                   storage.cache["bme_pressure"], 1000, 1026.5)
     ui.draw_gauge(img, 730, 390, 50, "RH% In",
                   storage.cache["bme_humidity"], 0, 100)
 
-    ui.draw_gauge(img, 70, 520, 50, "DJIA",
+    ui.draw_gauge(img, 70, 520, 50, "Dow",
                   storage.cache["DIA_intraday"][-1]*100, 20000, 30000)
-    ui.draw_chart(img, 180, 520, 50, "DJIA",
+    ui.draw_chart(img, 180, 520, 50, "Dow",
                   storage.cache["DIA_intraday"], storage.cache["DIA_previous"])
 
-    ui.draw_gauge(img, 290, 520, 50, "Google",
+    ui.draw_gauge(img, 290, 520, 50, "Goog",
                   storage.cache["GOOG_intraday"][-1], 1000, 2000)
-    ui.draw_chart(img, 400, 520, 50, "GOOG",
+    ui.draw_chart(img, 400, 520, 50, "Goog",
                   storage.cache["GOOG_intraday"], storage.cache["GOOG_previous"])
 
-    ui.draw_gauge(img, 510, 520, 50, "S&P 500",
+    ui.draw_gauge(img, 510, 520, 50, "S&P",
                   storage.cache["SPY_intraday"][-1]*10, 2000, 4000)
 
     ui.draw_gauge(img, 620, 520, 50, "Bitcoin",

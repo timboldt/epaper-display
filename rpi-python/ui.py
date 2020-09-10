@@ -146,7 +146,7 @@ def draw_gauge(img, x, y, radius, lbl, rawval, minval, maxval):
         ],
         fill=BLACK_COLOR)
 
-    fnt = ImageFont.truetype("Cantarell-Regular.otf", 22)
+    fnt = ImageFont.truetype("Cantarell-Regular.otf", 20)
     (szx, szy) = draw.textsize(lbl, font=fnt)
     draw.text((x - szx/2, y + radius * 1.05 - szy), lbl,
               font=fnt, fill=BLACK_COLOR)
@@ -191,15 +191,16 @@ def draw_chart(img, x, y, radius, label, vals, prev):
     top = y - radius
 
     if prev != 0:
-        valtxt = "{} {:.1f}%".format(label, (vals[-1] - prev) / prev * 100)
+        valtxt = "{} {:+.1f}%".format(label, (vals[-1] - prev) / prev * 100)
     else:
         valtxt = label
 
-    fnt = ImageFont.truetype("Cantarell-Regular.otf", 16)
-    (szx, szy) = draw.textsize(valtxt, font=fnt)
-    draw.text((x - szx/2, y + radius - szy),
+    fnt = ImageFont.truetype("Cantarell-Regular.otf", 20)
+    (szx, _) = draw.textsize(valtxt, font=fnt)
+    (_, szy) = draw.textsize("Gg!", font=fnt)
+    draw.text((x - szx/2, y + radius - szy/2),
               valtxt, font=fnt, fill=BLACK_COLOR)
-    height = radius * 2 - szy
+    height = radius * 2 - szy/2
     width = radius * 2
 
     if len(vals) > 1:
