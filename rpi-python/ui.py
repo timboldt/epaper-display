@@ -24,7 +24,7 @@ WHITE_COLOR = 0xFF
 
 def draw_cache_age(img, age):
     draw = ImageDraw.Draw(img)
-    fnt = ImageFont.truetype("Cantarell-Regular.otf", 20)
+    fnt = ImageFont.truetype("Cantarell-Regular.otf", 22)
     draw.text((3, 3), "{}".format(round(age)),
               font=fnt, fill=BLACK_COLOR)
 
@@ -34,7 +34,7 @@ def draw_date(img, dt):
     fnt = ImageFont.truetype("Cantarell-Regular.otf", 40)
     date_string = time.strftime("%a, %b %d", dt)
     (szx, _) = draw.textsize(date_string, font=fnt)
-    draw.text((800 - 10 - szx, 10), date_string,
+    draw.text((800 - 20 - szx, 10), date_string,
               font=fnt, fill=BLACK_COLOR)
 
 
