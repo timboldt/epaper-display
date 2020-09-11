@@ -23,11 +23,7 @@ WHITE_COLOR = 0xFF
 
 
 def draw_cache_age(img, age):
-    draw = ImageDraw.Draw(img)
-    fnt = ImageFont.truetype("Cantarell-Regular.otf", 22)
-    draw.text((3, 3), "{}".format(round(age)),
-              font=fnt, fill=BLACK_COLOR)
-
+    draw_gauge(img, 45, 45, 40, "Cache", age/60, 0, 12)
 
 def draw_date(img, dt):
     draw = ImageDraw.Draw(img)
@@ -191,7 +187,8 @@ def draw_chart(img, x, y, radius, label, vals, prev):
     top = y - radius
 
     if prev != 0:
-        valtxt = "{} {:+.1f}%".format(label, (vals[-1] - prev) / prev * 100)
+        #valtxt = "{} {:+.1f}%".format(label, (vals[-1] - prev) / prev * 100)
+        valtxt = "{} {:+.1f}".format(label, vals[-1] - prev)
     else:
         valtxt = label
 
