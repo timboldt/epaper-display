@@ -101,7 +101,7 @@ def update_display():
 
     ui.draw_gauge(img, 70, 520, 50, "Dow",
                   storage.cache["DIA_intraday"][-1]*100, 20000, 30000)
-    ui.draw_chart(img, 180, 520, 50, "Dow",
+    ui.draw_chart(img, 180, 520, 50, "DIA",
                   storage.cache["DIA_intraday"], storage.cache["DIA_previous"])
 
     ui.draw_gauge(img, 290, 520, 50, "Goog",
