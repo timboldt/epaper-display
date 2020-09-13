@@ -81,7 +81,8 @@ def update_display():
                   storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
     # ui.draw_gauge(img, 510, 130, 50, "°C Inside",
     #               storage.cache["bme_temperature"], 10, 40)
-    ui.draw_stoplight(img, 620, 130, 30, storage.cache["temperature"] > 25)  # and storage.cache["temperature"] > storage.cache["bme_temperature"]
+    # and storage.cache["temperature"] > storage.cache["bme_temperature"]
+    ui.draw_stoplight(img, 620, 130, 30, storage.cache["temperature"] > 25)
     ui.draw_gauge(img, 730, 130, 50, "°C Outside",
                   storage.cache["temperature"], 10, 40)
 
@@ -118,11 +119,11 @@ def update_display():
         ui.draw_chart(img, 730, 520, 50, "BTC",
                       storage.cache["btc_history"], storage.cache["btc_history"][0])
 
-    img=img.resize((400, 300), resample=Image.BOX)
-    img=Image.eval(img, ui.image_correction)
+    img = img.resize((400, 300), resample=Image.BOX)
+    img = Image.eval(img, ui.image_correction)
     # img.show()
 
-    epd=epd4in2.EPD()
+    epd = epd4in2.EPD()
     epd.Init_4Gray()
     epd.display_4Gray(epd.getbuffer_4Gray(img))
     epd.sleep()
@@ -133,13 +134,8 @@ def main():
     storage.load_cache()
     read_network()
     read_sensors()
-    print(storage.cache)
     update_display()
     storage.save_cache()
-    # while True:
-    #    read_network()
-    #    for _ in range(10):
-    #        time.sleep(120)
 
 
 if __name__ == "__main__":
