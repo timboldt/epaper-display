@@ -77,11 +77,10 @@ def update_display():
     ui.draw_date(img, now)
     ui.draw_clock(img, 240, 240, 200, now.tm_hour, now.tm_min)
 
+    ui.draw_gauge(img, 425, 45, 40, "Inside",
+                  storage.cache["bme_temperature"], 10, 40)
     ui.draw_chart(img, 510, 130, 50, "°C",
                   storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
-    # ui.draw_gauge(img, 510, 130, 50, "°C Inside",
-    #               storage.cache["bme_temperature"], 10, 40)
-    # and storage.cache["temperature"] > storage.cache["bme_temperature"]
     ui.draw_stoplight(img, 620, 130, 30, storage.cache["temperature"] > 25)
     ui.draw_gauge(img, 730, 130, 50, "°C Outside",
                   storage.cache["temperature"], 10, 40)
