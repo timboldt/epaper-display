@@ -87,14 +87,14 @@ def update_display():
 
     # ui.draw_gauge(img, 510, 260, 50, "Ozone", storage.cache["ozone"], 0, 200)
     ui.draw_chart(img, 510, 260, 50, "AQI",
-                  storage.cache["aqi_history"], storage.cache["aqi_history"][0])
+                  storage.cache["aqi_history"], storage.cache["aqi_history"][0], alpha=0.01)
     ui.draw_stoplight(img, 620, 260, 30,
                       storage.cache["ozone"] > 100 or storage.cache["pm25"] > 100)
     ui.draw_gauge(img, 730, 260, 50, "PM 2.5", storage.cache["pm25"], 0, 200)
 
-    ui.draw_chart(img, 510, 390, 50, "HPa",
+    ui.draw_chart(img, 510, 390, 50, "hPa",
                   storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
-    ui.draw_gauge(img, 620, 390, 50, "HPa",
+    ui.draw_gauge(img, 620, 390, 50, "hPa",
                   storage.cache["bme_pressure"], 1000, 1026.5)
     ui.draw_gauge(img, 730, 390, 50, "RH% In",
                   storage.cache["bme_humidity"], 0, 100)
@@ -104,13 +104,13 @@ def update_display():
     ui.draw_chart(img, 180, 520, 50, "DIA",
                   storage.cache["DIA_intraday"], storage.cache["DIA_previous"])
 
-    ui.draw_gauge(img, 290, 520, 50, "Goog",
-                  storage.cache["GOOG_intraday"][-1], 1000, 2000)
-    ui.draw_chart(img, 400, 520, 50, "Goog",
-                  storage.cache["GOOG_intraday"], storage.cache["GOOG_previous"])
-
-    ui.draw_gauge(img, 510, 520, 50, "S&P",
+    ui.draw_gauge(img, 290, 520, 50, "S&P",
                   storage.cache["SPY_intraday"][-1]*10, 2000, 4000)
+    ui.draw_chart(img, 400, 520, 50, "SPY",
+                  storage.cache["SPY_intraday"], storage.cache["SPY_previous"])
+
+    ui.draw_gauge(img, 510, 520, 50, "Goog",
+                  storage.cache["GOOG_intraday"][-1], 1000, 2000)
 
     ui.draw_gauge(img, 620, 520, 50, "Bitcoin",
                   storage.cache["btc_usd"], 7000, 13000)

@@ -176,8 +176,13 @@ def draw_stoplight(img, x, y, radius, on):
         fill=WHITE_COLOR)
 
 
-def draw_chart(img, x, y, radius, label, vals, prev):
-    vals = [prev] + vals
+def draw_chart(img, x, y, radius, label, rvals, prev, alpha=0.0):
+    vals = [prev] + rvals
+    if alpha > 0:
+        avg = vals[0]
+        for i in range(1, len(vals)):
+            avg = alpha*vals[i] + (1-alpha)*avg
+            vals[i] = avg
     mn = min(vals) * 0.998
     mx = max(vals) * 1.002
     if mx == mn:

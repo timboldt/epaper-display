@@ -128,10 +128,12 @@ def get_stock_intraday(sym):
         j = r.json()
         if sym + "_intraday" in storage.cache:
             vals = storage.cache[sym + "_intraday"]
-            vals = vals[-480:]
+            vals = vals[-200:]
         else:
             vals = []
-        vals.append(float(j["c"]))
+        newval = float(j["c"])
+        if len(vals) < 1 or newval != vals[-1]:
+            vals.append(newval)
         storage.cache[sym + "_intraday"] = vals
         storage.cache[sym + "_previous"] = float(j["pc"])
         r.close()
