@@ -81,7 +81,9 @@ def update_display():
                   storage.cache["bme_temperature"], 10, 40)
     ui.draw_chart(img, 510, 130, 50, "°C",
                   storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
-    ui.draw_stoplight(img, 620, 130, 30, storage.cache["temperature"] > 25)
+    ui.draw_stoplight(img, 620, 130, 30,
+                      storage.cache["temperature"] > 25 and
+                      storage.cache["bme_temperature"] < storage.cache["temperature"])
     ui.draw_gauge(img, 730, 130, 50, "°C Outside",
                   storage.cache["temperature"], 10, 40)
 
