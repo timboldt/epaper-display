@@ -101,15 +101,21 @@ def update_display():
     ui.draw_gauge(img, 730, 390, 50, "RH% In",
                   storage.cache["bme_humidity"], 0, 100)
 
+    dow = []
+    for v in storage.cache["DIA_intraday"]:
+        dow.append(v*100)
     ui.draw_gauge(img, 70, 520, 50, "Dow",
-                  storage.cache["DIA_intraday"][-1]*100, 20000, 30000)
-    ui.draw_chart(img, 180, 520, 50, "DIA",
-                  storage.cache["DIA_intraday"], storage.cache["DIA_previous"])
+                  dow[-1], 20000, 30000)
+    ui.draw_chart(img, 180, 520, 50, "Dow",
+                  dow, storage.cache["DIA_previous"]*100)
 
+    sp500 = []
+    for v in storage.cache["SPY_intraday"]:
+        sp500.append(v*10)
     ui.draw_gauge(img, 290, 520, 50, "S&P",
-                  storage.cache["SPY_intraday"][-1]*10, 2000, 4000)
-    ui.draw_chart(img, 400, 520, 50, "SPY",
-                  storage.cache["SPY_intraday"], storage.cache["SPY_previous"])
+                  sp500[-1], 2000, 4000)
+    ui.draw_chart(img, 400, 520, 50, "S&P",
+                  sp500, storage.cache["SPY_previous"]*10)
 
     ui.draw_gauge(img, 510, 520, 50, "Goog",
                   storage.cache["GOOG_intraday"][-1], 1000, 2000)
