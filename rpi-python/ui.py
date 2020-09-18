@@ -191,9 +191,10 @@ def draw_chart(img, x, y, radius, label, rvals, prev, alpha=0.0):
     left = x - radius
     top = y - radius
 
-    if prev != 0:
-        #valtxt = "{} {:+.1f}%".format(label, (vals[-1] - prev) / prev * 100)
-        valtxt = "{}: {:+.0f}".format(label, round(vals[-1] - prev))
+    if len(rvals) > 0:
+        #if prev != 0:
+        #    valtxt = "{} {:+.1f}%".format(label, (vals[-1] - prev) / prev * 100)
+        valtxt = "{}: {:+.0f}".format(label, round(rvals[-1] - prev))
     else:
         valtxt = label
 
