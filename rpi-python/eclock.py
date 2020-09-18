@@ -107,7 +107,7 @@ def update_display():
     ui.draw_gauge(img, 70, 520, 50, "Dow",
                   dow[-1], 20000, 30000)
     ui.draw_chart(img, 180, 520, 50, "Dow",
-                  dow, storage.cache["DIA_previous"]*100)
+                  dow, storage.cache["DIA_previous"]*100, alpha=0.1)
 
     sp500 = []
     for v in storage.cache["SPY_intraday"]:
@@ -115,7 +115,7 @@ def update_display():
     ui.draw_gauge(img, 290, 520, 50, "S&P",
                   sp500[-1], 2000, 4000)
     ui.draw_chart(img, 400, 520, 50, "S&P",
-                  sp500, storage.cache["SPY_previous"]*10)
+                  sp500, storage.cache["SPY_previous"]*10, alpha=0.1)
 
     ui.draw_gauge(img, 510, 520, 50, "Goog",
                   storage.cache["GOOG_intraday"][-1], 1000, 2000)
