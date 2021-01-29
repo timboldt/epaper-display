@@ -118,9 +118,9 @@ def update_display():
     #ui.draw_chart(img, 400, 520, 50, "S&P",
     #              sp500, storage.cache["SPY_previous"]*10, alpha=0.1)
 
-    ui.draw_gauge(img, 290, 520, 50, "Gamestop",
-                  storage.cache["GME_intraday"][-1], 1000, 2000)
-    ui.draw_chart(img, 400, 520, 50, "Gamestop",
+    ui.draw_gauge(img, 290, 520, 50, "GME",
+                  storage.cache["GME_intraday"][-1], 0, 500)
+    ui.draw_chart(img, 400, 520, 50, "GME",
                   storage.cache["GME_intraday"], storage.cache["GME_intraday"][0])
     
     ui.draw_gauge(img, 510, 520, 50, "Goog",
