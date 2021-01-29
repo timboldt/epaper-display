@@ -45,6 +45,7 @@ def read_network():
         net.get_stock_intraday("DIA")
         net.get_stock_intraday("SPY")
         net.get_stock_intraday("GOOG")
+        net.get_stock_intraday("GME")
         net.set_last_fetch_time(time.time())
 
 
@@ -112,11 +113,16 @@ def update_display():
     sp500 = []
     for v in storage.cache["SPY_intraday"]:
         sp500.append(v*10)
-    ui.draw_gauge(img, 290, 520, 50, "S&P",
-                  sp500[-1], 2000, 4000)
-    ui.draw_chart(img, 400, 520, 50, "S&P",
-                  sp500, storage.cache["SPY_previous"]*10, alpha=0.1)
+    #ui.draw_gauge(img, 290, 520, 50, "S&P",
+    #              sp500[-1], 2000, 4000)
+    #ui.draw_chart(img, 400, 520, 50, "S&P",
+    #              sp500, storage.cache["SPY_previous"]*10, alpha=0.1)
 
+    ui.draw_gauge(img, 290, 520, 50, "Gamestop",
+                  storage.cache["GME_intraday"][-1], 1000, 2000)
+    ui.draw_chart(img, 400, 520, 50, "Gamestop",
+                  storage.cache["GME_intraday"], storage.cache["GME_intraday"][0])
+    
     ui.draw_gauge(img, 510, 520, 50, "Goog",
                   storage.cache["GOOG_intraday"][-1], 1000, 2000)
 
