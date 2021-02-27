@@ -83,9 +83,12 @@ def get_air_quality():
         if len(j) == 2:
             o3 = float(j[0]["AQI"])
             pm25 = float(j[1]["AQI"])
-        else:
+        elif len(j) == 1:
             o3 = 0
             pm25 = float(j[0]["AQI"])
+        else:
+            o3 = 0
+            pm25 = 0
         print("AQI:", o3, pm25)
         storage.cache["ozone"] = o3
         storage.cache["pm25"] = pm25
