@@ -36,6 +36,8 @@ except ImportError:
     print("Cannot find WaveShare EPD driver!")
     raise
 
+def ctof(c):
+    return c*9/5+32
 
 def read_network():
     if net.time_since_last_fetch() > 12*60:
@@ -79,14 +81,14 @@ def update_display():
     ui.draw_clock(img, 300, 300, 280, now.tm_hour, now.tm_min)
 
     ui.draw_stoplight(img, 620, 130, 30,
-                      storage.cache["temperature"] > 25 and
+                      storage.cache["temperature"] > 24 and
                       storage.cache["bme_temperature"] < storage.cache["temperature"])
     #ui.draw_gauge(img, 510, 130, 50, "Inside",
     #              storage.cache["bme_temperature"], 10, 40)
     ui.draw_chart(img, 620, 390, 50, "°C",
                   storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
-    ui.draw_gauge(img, 730, 130, 50, "°C Outside",
-                  storage.cache["temperature"], 10, 40)
+    ui.draw_gauge(img, 730, 130, 50, "°F Outside",
+                  ctof(storage.cache["temperature"]), 50, 100)
 
     # ui.draw_gauge(img, 510, 260, 50, "Ozone", storage.cache["ozone"], 0, 200)
     ui.draw_stoplight(img, 620, 260, 30,
@@ -97,10 +99,10 @@ def update_display():
 
     #ui.draw_gauge(img, 510, 390, 50, "Pressure",
     #              storage.cache["bme_pressure"], 1000, 1026.5)
-    ui.draw_chart(img, 730, 390, 50, "hPa",
-                  storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
-    #ui.draw_gauge(img, 730, 390, 50, "Humidity",
-    #              storage.cache["bme_humidity"], 0, 100)
+    #ui.draw_chart(img, 730, 390, 50, "hPa",
+    #              storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
+    ui.draw_gauge(img, 730, 390, 50, "Humidity",
+                  storage.cache["bme_humidity"], 0, 100)
 
     #dow = []
     #for v in storage.cache["DIA_intraday"]:
@@ -127,7 +129,7 @@ def update_display():
     #              storage.cache["GOOG_intraday"][-1], 1000, 2000)
 
     ui.draw_gauge(img, 620, 520, 50, "Bitcoin",
-                  storage.cache["btc_usd"], 7000, 13000)
+                  storage.cache["btc_usd"], 0, 40000)
     if "btc_history" in storage.cache:
         ui.draw_chart(img, 730, 520, 50, "BTC",
                       storage.cache["btc_history"], storage.cache["btc_history"][0])
