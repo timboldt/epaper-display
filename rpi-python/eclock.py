@@ -78,31 +78,27 @@ def update_display():
     ui.draw_cache_age(img, net.time_since_last_fetch())
 
     ui.draw_date(img, now)
-    ui.draw_clock(img, 300, 300, 280, now.tm_hour, now.tm_min)
+    ui.draw_clock(img, 150, 450, 100, now.tm_hour, now.tm_min)
+    ui.draw_gauge(img, 360, 450, 75, "Inside", ctof(storage.cache["bme_temperature"]), 60, 80)
+    ui.draw_chart(img, 520, 450, 75, "Inside", storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
+    ui.draw_gauge(img, 700, 450, 75, "Humidity", storage.cache["bme_humidity"], 0, 100)
 
-    ui.draw_stoplight(img, 620, 130, 30,
+    ui.draw_stoplight(img, 320, 130, 30,
                       storage.cache["temperature"] > 24 and
                       storage.cache["bme_temperature"] < storage.cache["temperature"])
-    #ui.draw_gauge(img, 510, 130, 50, "Inside",
-    #              storage.cache["bme_temperature"], 10, 40)
-    ui.draw_chart(img, 620, 390, 50, "°C",
-                  storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
-    ui.draw_gauge(img, 730, 130, 50, "°F Outside",
-                  ctof(storage.cache["temperature"]), 50, 100)
+    ui.draw_gauge(img, 430, 130, 50, "°F Outside", ctof(storage.cache["temperature"]), 50, 100) 
 
     # ui.draw_gauge(img, 510, 260, 50, "Ozone", storage.cache["ozone"], 0, 200)
-    ui.draw_stoplight(img, 620, 260, 30,
+    ui.draw_stoplight(img, 320, 260, 30,
                       storage.cache["ozone"] > 100 or storage.cache["pm25"] > 100)
     #ui.draw_chart(img, 620, 260, 50, "AQI",
     #              storage.cache["aqi_history"], storage.cache["aqi_history"][0], alpha=0.01)
-    ui.draw_gauge(img, 730, 260, 50, "PM 2.5", storage.cache["pm25"], 0, 200)
+    ui.draw_gauge(img, 430, 260, 50, "PM 2.5", storage.cache["pm25"], 0, 200)
 
     #ui.draw_gauge(img, 510, 390, 50, "Pressure",
     #              storage.cache["bme_pressure"], 1000, 1026.5)
     #ui.draw_chart(img, 730, 390, 50, "hPa",
     #              storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
-    ui.draw_gauge(img, 730, 390, 50, "Humidity",
-                  storage.cache["bme_humidity"], 0, 100)
 
     #dow = []
     #for v in storage.cache["DIA_intraday"]:
@@ -128,10 +124,10 @@ def update_display():
     #ui.draw_gauge(img, 510, 520, 50, "Goog",
     #              storage.cache["GOOG_intraday"][-1], 1000, 2000)
 
-    ui.draw_gauge(img, 620, 520, 50, "Bitcoin",
+    ui.draw_gauge(img, 620, 220, 50, "Bitcoin",
                   storage.cache["btc_usd"], 0, 40000)
     if "btc_history" in storage.cache:
-        ui.draw_chart(img, 730, 520, 50, "BTC",
+        ui.draw_chart(img, 730, 220, 50, "BTC",
                       storage.cache["btc_history"], storage.cache["btc_history"][0])
 
     img = img.resize((400, 300), resample=Image.BOX)
