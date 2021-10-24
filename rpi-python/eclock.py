@@ -95,18 +95,18 @@ def update_display():
     #              storage.cache["aqi_history"], storage.cache["aqi_history"][0], alpha=0.01)
     ui.draw_gauge(img, 430, 260, 50, "PM 2.5", storage.cache["pm25"], 0, 200)
 
-    #ui.draw_gauge(img, 510, 390, 50, "Pressure",
-    #              storage.cache["bme_pressure"], 1000, 1026.5)
-    #ui.draw_chart(img, 730, 390, 50, "hPa",
-    #              storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
+    ui.draw_gauge(img, 100, 260, 50, "Pressure",
+                  storage.cache["bme_pressure"], 1000, 1026.5)
+    ui.draw_chart(img, 210, 260, 50, "hPa",
+                  storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
 
-    #dow = []
-    #for v in storage.cache["DIA_intraday"]:
-    #    dow.append(v*100)
-    #ui.draw_gauge(img, 70, 520, 50, "Dow",
-    #              dow[-1], 20000, 30000)
-    #ui.draw_chart(img, 180, 520, 50, "Dow",
-    #              dow, storage.cache["DIA_previous"]*100, alpha=0.1)
+    dow = []
+    for v in storage.cache["DIA_intraday"]:
+        dow.append(v*100)
+    ui.draw_gauge(img, 620, 130, 50, "Dow",
+                  dow[-1], 20000, 40000)
+    ui.draw_chart(img, 730, 130, 50, "Dow",
+                  dow, storage.cache["DIA_previous"]*100, alpha=0.1)
 
     #sp500 = []
     #for v in storage.cache["SPY_intraday"]:
@@ -124,10 +124,10 @@ def update_display():
     #ui.draw_gauge(img, 510, 520, 50, "Goog",
     #              storage.cache["GOOG_intraday"][-1], 1000, 2000)
 
-    ui.draw_gauge(img, 620, 220, 50, "Bitcoin",
-                  storage.cache["btc_usd"], 0, 40000)
+    ui.draw_gauge(img, 620, 260, 50, "Bitcoin",
+                  storage.cache["btc_usd"], 0, 100000)
     if "btc_history" in storage.cache:
-        ui.draw_chart(img, 730, 220, 50, "BTC",
+        ui.draw_chart(img, 730, 260, 50, "BTC",
                       storage.cache["btc_history"], storage.cache["btc_history"][0])
 
     img = img.resize((400, 300), resample=Image.BOX)
