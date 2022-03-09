@@ -42,7 +42,7 @@ func main() {
 
 	// Initialize Battery Voltage ADC.
 	vbat := machine.ADC{Pin: machine.D9}
-	vbat.Configure()
+	vbat.Configure(machine.ADCConfig{})
 
 	// Initialize TPL511x done pin.
 	powerOff := machine.D5
@@ -74,7 +74,7 @@ func main() {
 			clockTime = time.Time{}
 		}
 		// Voltage divider is half of 3.3V and total scale is 65536.
-		batteryMilliVolts := int32(vbat.Get()) * 2 * 3300 / 65536
+		batteryMilliVolts := 42 //int32(vbat.Get()) * 2 * 3300 / 65536
 
 		//
 		// === Update the display ===
