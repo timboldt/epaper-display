@@ -17,11 +17,11 @@ It later evolved into a full-featured Raspberry Pi epaper display, which pretty 
 ## Software
 
 This clock was my opportunity to experiment with a few different technologies.
-1. The original version used TinyGo is in the `go/` subdirectory, running on a Feather M0.
-2. The second version, in the `arduino/` subdirectory was written using conventional Arduino technologies, running on a Feather M0 (and later, a Feather M4). This version worked extremely well and was very low power.
-3. The third version was an experiment with Circuit Python (using a Feather M4), but the memory demands were too high with all the fonts and large graphics.
-4. The fourth version was an incomplete attempt to implement it in Rust on a Feather M0.
-5. The fifth (and current) version is implemented on a Raspberry Pi, and has a lot more functionality: TrueType fonts, 4-color greyscale with anti-aliasing,
+1. The original version used TinyGo is in the `microcontroller/tinygo/` subdirectory, running on a Feather M0.
+2. The second version, in the `microcontroller/arduino/` subdirectory, was written using conventional Arduino technologies, running on a Feather M0 (and later, a Feather M4). This version worked extremely well and was very low power.
+3. The third version, in the `microcontroller/micropython/` subdirectory, was an experiment with Circuit Python (using a Feather M4), but the memory demands were too high with all the fonts and large graphics.
+4. The fourth version, in the `microcontroller/rust/` subdirectory, was an incomplete attempt to implement it in Rust on a Feather M0.
+5. The fifth version, in the `rpi/python/` subdirectory,  is implemented on a Raspberry Pi, and has a lot more functionality: TrueType fonts, 4-color greyscale with anti-aliasing,
 stock charts, etc.
 
 ## Hardware
