@@ -1,4 +1,5 @@
 build
 .vscode
+.DS_Store
 wifi_secrets.h
 api-examples
