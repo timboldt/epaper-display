@@ -1,5 +1,11 @@
+# Pi Zero
+[target.arm-unknown-linux-gnueabi]
+linker = "arm-linux-gnueabi-gcc"
+
+# Pi 3 32-bit
 [target.armv7-unknown-linux-gnueabihf]
 linker = "arm-linux-gnueabihf-gcc"
 
+# Pi 3 64-bit
 [target.aarch64-unknown-linux-gnu]
 linker = "aarch64-linux-gnu-gcc"
