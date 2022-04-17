@@ -17,28 +17,29 @@
 extern crate reqwest;
 extern crate serde;
 
-use serde::Deserialize;
+use crate::weather::get_current_weather;
 
-#[derive(Deserialize, Debug)]
-struct OneCallWeather {
-    current: CurrentConditions,
-}
-
-#[derive(Deserialize, Debug)]
-struct CurrentConditions {
-    // Temperature in degrees (C, F or K).
-    #[serde(rename = "temp")]
-    temperature: Option<f32>,
-    // Percent humidity.
-    humidity: Option<i32>,
-    // Pressure in hPa.
-    pressure: Option<i32>,
-}
+mod weather;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let lat = 37.6624;
-    let lon = -121.8747;
-    let units = "imperial";
+    let lat = match std::env::var("OPEN_WEATHER_LAT") {
+        Ok(key) => key,
+        Err(_r) => {
+            eprintln!("error: missing environment variable OPEN_WEATHER_KEY");
+            "".to_string()
+        }
+    };
+    let lon = match std::env::var("OPEN_WEATHER_LON") {
+        Ok(key) => key,
+        Err(_r) => {
+            eprintln!("error: missing environment variable OPEN_WEATHER_KEY");
+            "".to_string()
+        }
+    };
+    let units = match std::env::var("OPEN_WEATHER_UNITS") {
+        Ok(key) => key,
+        Err(_r) => "imperial".to_string(),
+    };
     let api_key = match std::env::var("OPEN_WEATHER_KEY") {
         Ok(key) => key,
         Err(_r) => {
@@ -46,15 +47,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "".to_string()
         }
     };
-    let url = format!(
-        "https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units={}&exclude=hourly,daily&appid={}",
-        lat, lon, units, api_key
-    );
-    println!("{}", url);
-
-    let resp: OneCallWeather = reqwest::blocking::get(url)?.json()?;
-    println!("{:?}", resp);
-    //let resp = reqwest::blocking::get(url)?.text()?;
-    //println!("{}", resp);
+    let _ = get_current_weather(api_key, lat, lon, units)?;
     Ok(())
 }
