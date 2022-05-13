@@ -50,10 +50,10 @@ struct WeatherInfo {
 }
 
 pub fn get_current_weather(
-    api_key: String,
-    lat: String,
-    lon: String,
-    units: String,
+    api_key: &str,
+    lat: &str,
+    lon: &str,
+    units: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let url = format!(
         "https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&units={}&exclude=minutely,daily&appid={}",

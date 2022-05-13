@@ -17,22 +17,25 @@
 extern crate reqwest;
 extern crate serde;
 
+use air_quality::get_air_quality;
+
 use crate::weather::get_current_weather;
 
+mod air_quality;
 mod weather;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let lat = match std::env::var("OPEN_WEATHER_LAT") {
         Ok(key) => key,
         Err(_r) => {
-            eprintln!("error: missing environment variable OPEN_WEATHER_KEY");
+            eprintln!("error: missing environment variable OPEN_WEATHER_LAT");
             "".to_string()
         }
     };
     let lon = match std::env::var("OPEN_WEATHER_LON") {
         Ok(key) => key,
         Err(_r) => {
-            eprintln!("error: missing environment variable OPEN_WEATHER_KEY");
+            eprintln!("error: missing environment variable OPEN_WEATHER_LON");
             "".to_string()
         }
     };
@@ -47,6 +50,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "".to_string()
         }
     };
-    let _ = get_current_weather(api_key, lat, lon, units)?;
+    let _ = get_current_weather(&api_key, &lat, &lon, &units)?;
+    let _ = get_air_quality(&api_key, &lat, &lon);
     Ok(())
 }
