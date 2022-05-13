@@ -48,6 +48,7 @@ def read_network():
         net.get_stock_intraday("SPY")
         net.get_stock_intraday("GOOG")
         net.get_stock_intraday("GME")
+        net.get_stock_intraday("KRAKEN:USDTZUSD")
         net.set_last_fetch_time(time.time())
 
 
@@ -100,13 +101,21 @@ def update_display():
     ui.draw_chart(img, 210, 260, 50, "hPa",
                   storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
 
-    dow = []
-    for v in storage.cache["DIA_intraday"]:
-        dow.append(v*100)
-    ui.draw_gauge(img, 620, 130, 50, "Dow",
-                  dow[-1], 20000, 40000)
-    ui.draw_chart(img, 730, 130, 50, "Dow",
-                  dow, storage.cache["DIA_previous"]*100, alpha=0.1)
+    #dow = []
+    #for v in storage.cache["DIA_intraday"]:
+    #    dow.append(v*100)
+    #ui.draw_gauge(img, 620, 130, 50, "Dow",
+    #              dow[-1], 20000, 40000)
+    #ui.draw_chart(img, 730, 130, 50, "Dow",
+    #              dow, storage.cache["DIA_previous"]*100, alpha=0.1)
+
+    usdt = []
+    for v in storage.cache["KRAKEN:USDTZUSD_intraday"]:
+        usdt.append(v*100)
+    ui.draw_gauge(img, 620, 130, 50, "USDT",
+                  usdt[-1], 0, 100)
+    ui.draw_chart(img, 730, 130, 50, "USDT",
+                  usdt, storage.cache["KRAKEN:USDTZUSD_previous"]*100, alpha=0.1)
 
     #sp500 = []
     #for v in storage.cache["SPY_intraday"]:
