@@ -77,28 +77,40 @@ def update_display():
     img = Image.new("L", (800, 600), color=ui.WHITE_COLOR)
 
     ui.draw_cache_age(img, net.time_since_last_fetch())
-
     ui.draw_date(img, now)
-    ui.draw_clock(img, 150, 450, 100, now.tm_hour, now.tm_min)
-    ui.draw_gauge(img, 360, 450, 75, "Inside", ctof(storage.cache["bme_temperature"]), 60, 80)
-    ui.draw_chart(img, 520, 450, 75, "Inside", storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
-    ui.draw_gauge(img, 700, 450, 75, "Humidity", storage.cache["bme_humidity"], 0, 100)
-
-    ui.draw_stoplight(img, 320, 130, 30,
+    ui.draw_clock(img, 250, 100, 45, now.tm_hour, now.tm_min)
+    ui.draw_stoplight(img, 350, 100, 45,
                       storage.cache["temperature"] > 24 and
                       storage.cache["bme_temperature"] < storage.cache["temperature"])
-    ui.draw_gauge(img, 430, 130, 50, "°F Outside", ctof(storage.cache["temperature"]), 50, 100) 
-
-    # ui.draw_gauge(img, 510, 260, 50, "Ozone", storage.cache["ozone"], 0, 200)
-    ui.draw_stoplight(img, 320, 260, 30,
+    ui.draw_stoplight(img, 450, 100, 45,
                       storage.cache["ozone"] > 100 or storage.cache["pm25"] > 100)
-    #ui.draw_chart(img, 620, 260, 50, "AQI",
-    #              storage.cache["aqi_history"], storage.cache["aqi_history"][0], alpha=0.01)
-    ui.draw_gauge(img, 430, 260, 50, "PM 2.5", storage.cache["pm25"], 0, 200)
 
-    ui.draw_gauge(img, 100, 260, 50, "Pressure",
-                  storage.cache["bme_pressure"], 1000, 1026.5)
-    ui.draw_chart(img, 210, 260, 50, "hPa",
+    ui.draw_gauge(img, 100, 300, 90, "Bitcoin",
+                  storage.cache["btc_usd"], 0, 30000)
+    if "btc_history" in storage.cache:
+        ui.draw_chart(img, 300, 300, 90, "BTC",
+                      storage.cache["btc_history"], storage.cache["btc_history"][0])
+
+    usdt = []
+    for v in storage.cache["KRAKEN:USDTZUSD_intraday"]:
+        usdt.append(v*100)
+    ui.draw_gauge(img, 100, 500, 90, "USDT",
+                  usdt[-1], 0, 100)
+    ui.draw_chart(img, 300, 500, 90, "USDT",
+                  usdt, storage.cache["KRAKEN:USDTZUSD_previous"]*100, alpha=0.1)
+
+    ui.draw_gauge(img, 500, 300, 90, "Inside", ctof(storage.cache["bme_temperature"]), 50, 100)
+    #ui.draw_chart(img, 500, 300, 90, "Inside", storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
+    ui.draw_gauge(img, 700, 300, 90, "Outside", ctof(storage.cache["temperature"]), 50, 100) 
+    #ui.draw_chart(img, 700, 300, 90, "Outside", storage.cache["temperature_history"], storage.cache["temperature_history"][0])
+
+    ui.draw_chart(img, 500, 500, 90, "AQI",
+                  storage.cache["aqi_history"], storage.cache["aqi_history"][0], alpha=0.01)
+
+    #ui.draw_gauge(img, 700, 500, 90, "Humidity", storage.cache["bme_humidity"], 0, 100)
+    #ui.draw_gauge(img, 700, 500, 90, "Pressure",
+    #              storage.cache["bme_pressure"], 1000, 1026.5)
+    ui.draw_chart(img, 700, 500, 90, "hPa",
                   storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
 
     #dow = []
@@ -109,13 +121,6 @@ def update_display():
     #ui.draw_chart(img, 730, 130, 50, "Dow",
     #              dow, storage.cache["DIA_previous"]*100, alpha=0.1)
 
-    usdt = []
-    for v in storage.cache["KRAKEN:USDTZUSD_intraday"]:
-        usdt.append(v*100)
-    ui.draw_gauge(img, 620, 130, 50, "USDT",
-                  usdt[-1], 0, 100)
-    ui.draw_chart(img, 730, 130, 50, "USDT",
-                  usdt, storage.cache["KRAKEN:USDTZUSD_previous"]*100, alpha=0.1)
 
     #sp500 = []
     #for v in storage.cache["SPY_intraday"]:
@@ -133,11 +138,6 @@ def update_display():
     #ui.draw_gauge(img, 510, 520, 50, "Goog",
     #              storage.cache["GOOG_intraday"][-1], 1000, 2000)
 
-    ui.draw_gauge(img, 620, 260, 50, "Bitcoin",
-                  storage.cache["btc_usd"], 0, 100000)
-    if "btc_history" in storage.cache:
-        ui.draw_chart(img, 730, 260, 50, "BTC",
-                      storage.cache["btc_history"], storage.cache["btc_history"][0])
 
     img = img.resize((400, 300), resample=Image.BOX)
     img = Image.eval(img, ui.image_correction)
