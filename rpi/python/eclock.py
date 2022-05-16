@@ -46,8 +46,8 @@ def read_network():
         net.get_air_quality()
         net.get_stock_intraday("DIA")
         net.get_stock_intraday("SPY")
-        net.get_stock_intraday("GOOG")
-        net.get_stock_intraday("GME")
+        #net.get_stock_intraday("GOOG")
+        #net.get_stock_intraday("GME")
         net.get_stock_intraday("KRAKEN:USDTZUSD")
         net.set_last_fetch_time(time.time())
 
@@ -99,13 +99,13 @@ def update_display():
     ui.draw_chart(img, 300, 500, 90, "USDT",
                   usdt, storage.cache["KRAKEN:USDTZUSD_previous"]*100, alpha=0.1)
 
-    ui.draw_gauge(img, 500, 300, 90, "Inside", ctof(storage.cache["bme_temperature"]), 50, 100)
-    #ui.draw_chart(img, 500, 300, 90, "Inside", storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
-    ui.draw_gauge(img, 700, 300, 90, "Outside", ctof(storage.cache["temperature"]), 50, 100) 
+    ui.draw_gauge(img, 500, 300, 90, "Inside", ctof(storage.cache["bme_temperature"]), 60, 80)
+    ui.draw_chart(img, 500, 500, 90, "Inside", storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
+    ui.draw_gauge(img, 700, 300, 90, "Outside", ctof(storage.cache["temperature"]), 30, 110) 
     #ui.draw_chart(img, 700, 300, 90, "Outside", storage.cache["temperature_history"], storage.cache["temperature_history"][0])
 
-    ui.draw_chart(img, 500, 500, 90, "AQI",
-                  storage.cache["aqi_history"], storage.cache["aqi_history"][0], alpha=0.01)
+    #ui.draw_chart(img, 500, 500, 90, "AQI",
+    #              storage.cache["aqi_history"], storage.cache["aqi_history"][0], alpha=0.01)
 
     #ui.draw_gauge(img, 700, 500, 90, "Humidity", storage.cache["bme_humidity"], 0, 100)
     #ui.draw_gauge(img, 700, 500, 90, "Pressure",
