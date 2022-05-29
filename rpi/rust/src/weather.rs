@@ -49,7 +49,7 @@ struct WeatherInfo {
     icon: String,
 }
 
-pub fn get_current_weather(
+pub async fn get_current_weather(
     api_key: &str,
     lat: &str,
     lon: &str,
@@ -60,7 +60,7 @@ pub fn get_current_weather(
         lat, lon, units, api_key
     );
     println!("{}", url);
-    let resp: OneCallWeather = reqwest::blocking::get(url)?.json()?;
+    let resp: OneCallWeather = reqwest::get(url).await?.json();
     println!("{:?}", resp);
     let dt = Utc
         .timestamp(resp.current.utc_timestamp, 0)
@@ -72,8 +72,8 @@ pub fn get_current_weather(
         resp.current.utc_timestamp - 60 * 60 * 8, lat, lon, units, api_key
     );
     println!("{}", url);
-    let resp: OneCallWeather = reqwest::blocking::get(url)?.json()?;
-    println!("{:?}", resp);
+    let resp = reqwest::get(url).await?;
+    println!("{:?}", resp.await?.json());
     // let resp = reqwest::blocking::get(url)?.text()?;
     // println!("{}", resp);
 

@@ -47,7 +47,7 @@ struct Pollutants {
     nh3: Option<f32>,
 }
 
-pub fn get_air_quality(
+pub async fn get_air_quality(
     api_key: &str,
     lat: &str,
     lon: &str,
@@ -59,7 +59,7 @@ pub fn get_air_quality(
     // println!("{}", url);
     // let resp = reqwest::blocking::get(url)?.text()?;
     // println!("{}", resp);
-    let resp: AirQualityResponse = reqwest::blocking::get(url)?.json()?;
+    let resp: AirQualityResponse = reqwest::get(url).await?.json()?;
     println!("{:?}", resp);
     let dt = Utc
         .timestamp(resp.list[0].utc_timestamp, 0)
@@ -71,7 +71,7 @@ pub fn get_air_quality(
         lat, lon, resp.list[0].utc_timestamp - 60 * 60 * 8, resp.list[0].utc_timestamp, api_key
     );
     println!("{}", url);
-    let resp: AirQualityResponse = reqwest::blocking::get(url)?.json()?;
+    let resp: AirQualityResponse = reqwest::get(url).await?.json();
     println!("{:?}", resp);
 
     // TODO:
