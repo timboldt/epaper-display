@@ -220,8 +220,8 @@ def draw_chart(img, x, y, radius, label, rvals, prev, alpha=0.0):
             (left, top),
             (left+width, top + height),
         ],
-        outline=BLACK_COLOR,
-        width=2)
+        outline=DKGREY_COLOR,
+        width=1)
 
 
 def image_correction(x):
