@@ -55,7 +55,8 @@ def read_network():
 def read_sensors():
     bme = Sensor(address=0x76)
     bme_data = bme.get_data()
-    temperature = bme_data["temperature"]
+    temperature_calibration = -1.8  # Empirical value
+    temperature = bme_data["temperature"] + temperature_calibration
     storage.cache["bme_temperature"] = temperature
     if not "bme_temperature_history" in storage.cache:
         storage.cache["bme_temperature_history"] = []
@@ -99,9 +100,9 @@ def update_display():
     ui.draw_chart(img, 300, 500, 90, "USDT",
                   usdt, storage.cache["KRAKEN:USDTZUSD_previous"]*100, alpha=0.1)
 
-    ui.draw_gauge(img, 500, 300, 90, "Inside", ctof(storage.cache["bme_temperature"]), 60, 80)
+    ui.draw_gauge(img, 500, 300, 90, "Inside", storage.cache["bme_temperature"], 10, 30)
     ui.draw_chart(img, 500, 500, 90, "Inside", storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
-    ui.draw_gauge(img, 700, 300, 90, "Outside", ctof(storage.cache["temperature"]), 30, 110) 
+    ui.draw_gauge(img, 700, 300, 90, "Outside", storage.cache["temperature"], 0, 40) 
     #ui.draw_chart(img, 700, 300, 90, "Outside", storage.cache["temperature_history"], storage.cache["temperature_history"][0])
 
     #ui.draw_chart(img, 500, 500, 90, "AQI",
