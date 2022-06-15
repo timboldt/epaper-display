@@ -98,7 +98,7 @@ def update_display():
     ui.draw_gauge(img, 100, 500, 90, "USDT",
                   usdt[-1], 0, 100)
     ui.draw_chart(img, 300, 500, 90, "USDT",
-                  usdt, storage.cache["KRAKEN:USDTZUSD_previous"]*100, alpha=0.1)
+                  usdt, usdt[0], alpha=0.0)
 
     ui.draw_gauge(img, 500, 300, 90, "Inside", storage.cache["bme_temperature"], 10, 30)
     ui.draw_chart(img, 500, 500, 90, "Inside", storage.cache["bme_temperature_history"], storage.cache["bme_temperature_history"][0])
