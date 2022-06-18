@@ -48,6 +48,7 @@ def read_network():
         net.get_stock_intraday("SPY")
         #net.get_stock_intraday("GOOG")
         #net.get_stock_intraday("GME")
+        net.get_stock_intraday("BITFINEX:USTUSD")
         net.get_stock_intraday("KRAKEN:USDTZUSD")
         net.set_last_fetch_time(time.time())
 
@@ -93,7 +94,8 @@ def update_display():
                       storage.cache["btc_history"], storage.cache["btc_history"][0])
 
     usdt = []
-    for v in storage.cache["KRAKEN:USDTZUSD_intraday"]:
+    #for v in storage.cache["KRAKEN:USDTZUSD_intraday"]:
+    for v in storage.cache["BITFINEX:USTUSD_intraday"]:
         usdt.append(v*100)
     ui.draw_gauge(img, 100, 500, 90, "USDT",
                   usdt[-1], 0, 100)
