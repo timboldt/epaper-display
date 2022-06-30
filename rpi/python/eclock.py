@@ -96,7 +96,7 @@ def update_display():
     usdt = []
     #for v in storage.cache["KRAKEN:USDTZUSD_intraday"]:
     for v in storage.cache["BITFINEX:USTUSD_intraday"]:
-        usdt.append(v*100)
+        usdt.append((v*100-99)*100)
     ui.draw_gauge(img, 100, 500, 90, "USDT",
                   usdt[-1], 0, 100)
     ui.draw_chart(img, 300, 500, 90, "USDT",
