@@ -29,7 +29,6 @@ Pillow>=7.2.0
 pycodestyle>=2.6.0
 pycrypto>=2.6.1
 pyftdi>=0.51.2
-PyGObject>=3.30.4
 pylint>=2.6.0
 pyserial>=3.4
 python-apt>=1.8.4.1
