@@ -151,7 +151,7 @@ def draw_gauge(img, x, y, radius, lbl, rawval, minval, maxval):
         valtxt = "{:.1f}".format(rawval)
     else:
         valtxt = "{:d}".format(round(rawval))
-    fnt = ImageFont.truetype("Cantarell-Regular.otf", 16)
+    fnt = ImageFont.truetype("Cantarell-Regular.otf", 24)
     (szx, szy) = draw.textsize(valtxt, font=fnt)
     draw.text((x - szx/2, y + radius * 0.45 - szy),
               valtxt, font=fnt, fill=BLACK_COLOR)

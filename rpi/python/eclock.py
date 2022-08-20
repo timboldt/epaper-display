@@ -113,16 +113,16 @@ def update_display():
     #ui.draw_gauge(img, 700, 500, 90, "Humidity", storage.cache["bme_humidity"], 0, 100)
     #ui.draw_gauge(img, 700, 500, 90, "Pressure",
     #              storage.cache["bme_pressure"], 1000, 1026.5)
-    ui.draw_chart(img, 700, 500, 90, "hPa",
-                  storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
+    #ui.draw_chart(img, 700, 500, 90, "hPa",
+    #              storage.cache["bme_pressure_history"], storage.cache["bme_pressure_history"][0])
 
-    #dow = []
-    #for v in storage.cache["DIA_intraday"]:
-    #    dow.append(v*100)
-    #ui.draw_gauge(img, 620, 130, 50, "Dow",
+    dow = []
+    for v in storage.cache["DIA_intraday"]:
+        dow.append(v*100)
+    #ui.draw_gauge(img, 500, 500, 90, "Dow",
     #              dow[-1], 20000, 40000)
-    #ui.draw_chart(img, 730, 130, 50, "Dow",
-    #              dow, storage.cache["DIA_previous"]*100, alpha=0.1)
+    ui.draw_chart(img, 700, 500, 90, "Dow",
+                  dow, storage.cache["DIA_previous"]*100, alpha=0.1)
 
 
     #sp500 = []
