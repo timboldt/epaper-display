@@ -54,7 +54,7 @@ def read_network():
 
 
 def read_sensors():
-    bme = Sensor(address=0x76)
+    bme = Sensor(address=0x77)
     bme_data = bme.get_data()
     temperature_calibration = -1.8  # Empirical value
     temperature = bme_data["temperature"] + temperature_calibration
