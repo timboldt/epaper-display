@@ -12,18 +12,16 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import os
 import json
 import requests
 import time
 
 import storage
 
-try:
-    import secrets
-except ImportError:
-    print("Network secrets are kept in secrets.py, please add them there!")
-    raise
-
+OPEN_WEATHER_KEY = os.getenv('OPEN_WEATHER_KEY')
+AIRNOW_API_KEY = os.getenv('AIRNOW_API_KEY')
+FINHUB_API_KEY = os.getenv('FINHUB_API_KEY')
 
 def time_since_last_fetch():
     if "last_fetch" in storage.cache:
@@ -58,7 +56,7 @@ def get_weather():
     try:
         print("Fetching weather data from network...")
         r = requests.get(
-            "http://api.openweathermap.org/data/2.5/weather?id=5383777&units=metric&appid=" + secrets.OPEN_WEATHER_KEY)
+            "http://api.openweathermap.org/data/2.5/weather?id=5383777&units=metric&appid=" + OPEN_WEATHER_KEY)
         j = r.json()
         temperature = float(j["main"]["temp"])
         pressure = float(j["main"]["pressure"])
@@ -77,7 +75,7 @@ def get_air_quality():
         print("Fetching air quality from AirNow...")
         r = requests.get(
             "http://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=94566&distance=25&API_KEY=" +
-            secrets.AIRNOW_API_KEY)
+            AIRNOW_API_KEY)
         j = r.json()
         # TODO: Verify that doc order is okay. If not look at "parameter".
         if len(j) == 2:
@@ -108,7 +106,7 @@ def get_air_quality():
 #             "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" +
 #             sym +
 #             "&interval=15min&apikey=" +
-#             secrets.ALPHAVANTAGE_API_KEY)
+#             ALPHAVANTAGE_API_KEY)
 #         j = r.json()
 #         series = j["Time Series (15min)"]
 #         vals = []
@@ -127,7 +125,7 @@ def get_stock_intraday(sym):
             "https://finnhub.io/api/v1/quote?symbol=" +
             sym +
             "&token=" +
-            secrets.FINHUB_API_KEY)
+            FINHUB_API_KEY)
         j = r.json()
         if sym + "_intraday" in storage.cache:
             vals = storage.cache[sym + "_intraday"]
