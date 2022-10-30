@@ -56,7 +56,7 @@ def read_network():
 def read_sensors():
     bme = Sensor(address=0x77)
     bme_data = bme.get_data()
-    temperature_calibration = -1.8  # Empirical value
+    temperature_calibration = 0  # Empirical value
     temperature = bme_data["temperature"] + temperature_calibration
     storage.cache["bme_temperature"] = temperature
     if not "bme_temperature_history" in storage.cache:
@@ -142,7 +142,7 @@ def update_display():
     #              storage.cache["GOOG_intraday"][-1], 1000, 2000)
 
 
-    img = img.resize((400, 300), resample=Image.BOX)
+    img = img.resize((400, 300), resample=Image.Resampling.BOX)
     img = Image.eval(img, ui.image_correction)
     # img.show()
 
